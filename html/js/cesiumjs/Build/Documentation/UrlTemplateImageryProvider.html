@@ -46,7 +46,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L160">Scene/UrlTemplateImageryProvider.js 160</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L173">Scene/UrlTemplateImageryProvider.js 173</a>
 </div>
 
 
@@ -204,6 +204,40 @@
                 
             
                 The URL template to use to pick features.  If this property is not specified,                <a href="UrlTemplateImageryProvider.html#pickFeatures"><code>UrlTemplateImageryProvider#pickFeatures</code></a> will immediately returned undefined, indicating no                features picked.  The URL template supports all of the keywords supported by the <code>url</code>                parameter, plus the following:<ul>    <li><code>{i}</code>: The pixel column (horizontal coordinate) of the picked position, where the Westernmost pixel is 0.</li>    <li><code>{j}</code>: The pixel row (vertical coordinate) of the picked position, where the Northernmost pixel is 0.</li>    <li><code>{reverseI}</code>: The pixel column (horizontal coordinate) of the picked position, where the Easternmost pixel is 0.</li>    <li><code>{reverseJ}</code>: The pixel row (vertical coordinate) of the picked position, where the Southernmost pixel is 0.</li>    <li><code>{longitudeDegrees}</code>: The longitude of the picked position in degrees.</li>    <li><code>{latitudeDegrees}</code>: The latitude of the picked position in degrees.</li>    <li><code>{longitudeProjected}</code>: The longitude of the picked position in the projected coordinates of the tiling scheme.</li>    <li><code>{latitudeProjected}</code>: The latitude of the picked position in the projected coordinates of the tiling scheme.</li>    <li><code>{format}</code>: The format in which to get feature information, as specified in the <a href="GetFeatureInfoFormat.html"><code>GetFeatureInfoFormat</code></a>.</li></ul></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>urlSchemeZeroPadding</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">
+            
+                
+                        <span class="optional">optional</span>
+                
+                
+
+                
+            
+                Gets the URL scheme zero padding for each tile coordinate. The format is '000' whereeach coordinate will be padded on the left with zeros to match the width of the passed string of zeros. e.g. Setting:urlSchemeZeroPadding : { '{x}' : '0000'}will cause an 'x' value of 12 to return the string '0012' for {x} in the generated URL.It the passed object has the following keywords:<ul> <li> <code>{z}</code>: The zero padding for the level of the tile in the tiling scheme.</li> <li> <code>{x}</code>: The zero padding for the tile X coordinate in the tiling scheme.</li> <li> <code>{y}</code>: The zero padding for the the tile Y coordinate in the tiling scheme.</li> <li> <code>{reverseX}</code>: The zero padding for the tile reverseX coordinate in the tiling scheme.</li> <li> <code>{reverseY}</code>: The zero padding for the tile reverseY coordinate in the tiling scheme.</li> <li> <code>{reverseZ}</code>: The zero padding for the reverseZ coordinate of the tile in the tiling scheme.</li></ul></td>
         </tr>
 
     
@@ -778,7 +812,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L451">Scene/UrlTemplateImageryProvider.js 451</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L490">Scene/UrlTemplateImageryProvider.js 490</a>
 </div>
 
 
@@ -843,7 +877,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L195">Scene/UrlTemplateImageryProvider.js 195</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L209">Scene/UrlTemplateImageryProvider.js 209</a>
 </div>
 
 
@@ -908,7 +942,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L413">Scene/UrlTemplateImageryProvider.js 413</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L452">Scene/UrlTemplateImageryProvider.js 452</a>
 </div>
 
 
@@ -970,7 +1004,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L474">Scene/UrlTemplateImageryProvider.js 474</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L513">Scene/UrlTemplateImageryProvider.js 513</a>
 </div>
 
 
@@ -1035,7 +1069,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L316">Scene/UrlTemplateImageryProvider.js 316</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L355">Scene/UrlTemplateImageryProvider.js 355</a>
 </div>
 
 
@@ -1100,7 +1134,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L335">Scene/UrlTemplateImageryProvider.js 335</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L374">Scene/UrlTemplateImageryProvider.js 374</a>
 </div>
 
 
@@ -1165,7 +1199,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L264">Scene/UrlTemplateImageryProvider.js 264</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L303">Scene/UrlTemplateImageryProvider.js 303</a>
 </div>
 
 
@@ -1230,7 +1264,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L425">Scene/UrlTemplateImageryProvider.js 425</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L464">Scene/UrlTemplateImageryProvider.js 464</a>
 </div>
 
 
@@ -1292,7 +1326,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L437">Scene/UrlTemplateImageryProvider.js 437</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L476">Scene/UrlTemplateImageryProvider.js 476</a>
 </div>
 
 
@@ -1354,7 +1388,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L373">Scene/UrlTemplateImageryProvider.js 373</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L412">Scene/UrlTemplateImageryProvider.js 412</a>
 </div>
 
 
@@ -1419,7 +1453,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L394">Scene/UrlTemplateImageryProvider.js 394</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L433">Scene/UrlTemplateImageryProvider.js 433</a>
 </div>
 
 
@@ -1484,7 +1518,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L297">Scene/UrlTemplateImageryProvider.js 297</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L336">Scene/UrlTemplateImageryProvider.js 336</a>
 </div>
 
 
@@ -1549,7 +1583,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L278">Scene/UrlTemplateImageryProvider.js 278</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L317">Scene/UrlTemplateImageryProvider.js 317</a>
 </div>
 
 
@@ -1614,7 +1648,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L354">Scene/UrlTemplateImageryProvider.js 354</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L393">Scene/UrlTemplateImageryProvider.js 393</a>
 </div>
 
 
@@ -1679,7 +1713,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L226">Scene/UrlTemplateImageryProvider.js 226</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L240">Scene/UrlTemplateImageryProvider.js 240</a>
 </div>
 
 
@@ -1693,6 +1727,68 @@
     
     <div class="description">
         Gets the URL template to use to request tiles.  It has the following keywords:<ul> <li> <code>{z}</code>: The level of the tile in the tiling scheme.  Level zero is the root of the quadtree pyramid.</li> <li> <code>{x}</code>: The tile X coordinate in the tiling scheme, where 0 is the Westernmost tile.</li> <li> <code>{y}</code>: The tile Y coordinate in the tiling scheme, where 0 is the Northernmost tile.</li> <li> <code>{s}</code>: One of the available subdomains, used to overcome browser limits on the number of simultaneous requests per host.</li> <li> <code>{reverseX}</code>: The tile X coordinate in the tiling scheme, where 0 is the Easternmost tile.</li> <li> <code>{reverseY}</code>: The tile Y coordinate in the tiling scheme, where 0 is the Southernmost tile.</li> <li> <code>{reverseZ}</code>: The level of the tile in the tiling scheme, where level zero is the maximum level of the quadtree pyramid.  In order to use reverseZ, maximumLevel must be defined.</li> <li> <code>{westDegrees}</code>: The Western edge of the tile in geodetic degrees.</li> <li> <code>{southDegrees}</code>: The Southern edge of the tile in geodetic degrees.</li> <li> <code>{eastDegrees}</code>: The Eastern edge of the tile in geodetic degrees.</li> <li> <code>{northDegrees}</code>: The Northern edge of the tile in geodetic degrees.</li> <li> <code>{westProjected}</code>: The Western edge of the tile in projected coordinates of the tiling scheme.</li> <li> <code>{southProjected}</code>: The Southern edge of the tile in projected coordinates of the tiling scheme.</li> <li> <code>{eastProjected}</code>: The Eastern edge of the tile in projected coordinates of the tiling scheme.</li> <li> <code>{northProjected}</code>: The Northern edge of the tile in projected coordinates of the tiling scheme.</li> <li> <code>{width}</code>: The width of each tile in pixels.</li> <li> <code>{height}</code>: The height of each tile in pixels.</li></ul>
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+    <h4 class="name" id="urlSchemeZeroPadding">
+        <a href="#urlSchemeZeroPadding" class="doc-link"></a>
+        <span class="type-signature attribute-readonly">readonly</span>urlSchemeZeroPadding<span class="type-signature"> : Object</span>
+        
+
+<div class="source-link rightLinks">
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L264">Scene/UrlTemplateImageryProvider.js 264</a>
+</div>
+
+
+    </h4>
+
+    </div>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Gets the URL scheme zero padding for each tile coordinate. The format is '000' where each coordinate will be padded onthe left with zeros to match the width of the passed string of zeros. e.g. Setting:urlSchemeZeroPadding : { '{x}' : '0000'}will cause an 'x' value of 12 to return the string '0012' for {x} in the generated URL.It has the following keywords:<ul> <li> <code>{z}</code>: The zero padding for the level of the tile in the tiling scheme.</li> <li> <code>{x}</code>: The zero padding for the tile X coordinate in the tiling scheme.</li> <li> <code>{y}</code>: The zero padding for the the tile Y coordinate in the tiling scheme.</li> <li> <code>{reverseX}</code>: The zero padding for the tile reverseX coordinate in the tiling scheme.</li> <li> <code>{reverseY}</code>: The zero padding for the tile reverseY coordinate in the tiling scheme.</li> <li> <code>{reverseZ}</code>: The zero padding for the reverseZ coordinate of the tile in the tiling scheme.</li></ul>
     </div>
     
 
@@ -1747,7 +1843,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L550">Scene/UrlTemplateImageryProvider.js 550</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L590">Scene/UrlTemplateImageryProvider.js 590</a>
 </div>
 
 
@@ -1942,7 +2038,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L595">Scene/UrlTemplateImageryProvider.js 595</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L635">Scene/UrlTemplateImageryProvider.js 635</a>
 </div>
 
 
@@ -2169,7 +2265,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L492">Scene/UrlTemplateImageryProvider.js 492</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L531">Scene/UrlTemplateImageryProvider.js 531</a>
 </div>
 
 
@@ -2298,7 +2394,7 @@
         
 
 <div class="source-link rightLinks">
-    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.23/Source/Scene/UrlTemplateImageryProvider.js#L571">Scene/UrlTemplateImageryProvider.js 571</a>
+    <a href="https://github.com/AnalyticalGraphicsInc/cesium/blob/1.24/Source/Scene/UrlTemplateImageryProvider.js#L611">Scene/UrlTemplateImageryProvider.js 611</a>
 </div>
 
 

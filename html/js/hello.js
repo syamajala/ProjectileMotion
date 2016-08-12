@@ -3,19 +3,19 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
     geocoder : false,
     baseLayerPicker : false,
     imageryProvider : Cesium.createTileMapServiceImageryProvider({
-        url : '/js/cesiumjs/Build/Cesium/Assets/Textures/NaturalEarthII',
+        url : '/images/NaturalEarthII',
         maximumLevel: 5,
         credit : 'Imagery courtesy Natual Earth'}),
 });
 
 viewer.scene.skyBox = new Cesium.SkyBox({
     sources : {
-        positiveX : '/js/cesiumjs/Build/Cesium/Assets/Textures/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_px.jpg',
-        negativeX : '/js/cesiumjs/Build/Cesium/Assets/Textures/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_mx.jpg',
-        positiveY : '/js/cesiumjs/Build/Cesium/Assets/Textures/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_py.jpg',
-        negativeY : '/js/cesiumjs/Build/Cesium/Assets/Textures/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_my.jpg',
-        positiveZ : '/js/cesiumjs/Build/Cesium/Assets/Textures/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_pz.jpg',
-        negativeZ : '/js/cesiumjs/Build/Cesium/Assets/Textures/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_mz.jpg',
+        positiveX : '/images/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_px.jpg',
+        negativeX : '/images/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_mx.jpg',
+        positiveY : '/images/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_py.jpg',
+        negativeY : '/images/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_my.jpg',
+        positiveZ : '/images/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_pz.jpg',
+        negativeZ : '/images/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_mz.jpg',
     }
 });
 
