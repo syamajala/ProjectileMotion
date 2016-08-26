@@ -1,11 +1,13 @@
 from flask import Flask, render_template
-from flask_socketio import SocketIO, send, emit
-from czml import czml
+from flask_socketio import SocketIO, emit
+import sys
+sys.path.insert(0, 'modules/czml/czml')
+import czml
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
-
 
 @app.route("/")
 def hello():
