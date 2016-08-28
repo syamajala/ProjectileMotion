@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
+from bokeh.plotting import figure
+from bokeh.layouts import column
+from bokeh.embed import components
 import numpy as np
 import sys
 import itertools
@@ -15,7 +18,10 @@ socketio = SocketIO(app)
 
 @app.route("/")
 def hello():
-    return render_template('viz.html')
+    temp = render_template('viz.html',
+                           div=div, script=script,
+                           div2=div2, script2=script2)
+    return temp
 
 @socketio.on('connect')
 def handle_connect():
@@ -32,7 +38,7 @@ if __name__ == '__main__':
                                    version = "1.0",
                                    clock={"interval": "2000-01-01T11:58:55Z/2000-01-01T23:58:55Z",
                                           "currentTime:":"2000-01-01T11:58:55Z",
-                                          "multiplier": 2})
+                                          "multiplier": 5})
 
 
     glider_packet = czml.CZMLPacket(id="path",
@@ -63,6 +69,8 @@ if __name__ == '__main__':
     y = (20925646.3255*.3048) + y
     z = np.zeros(time.size)
 
+    vx, vy = p.vel(time)
+
     pos = zip(time, x, y, z)
 
     position_pack.cartesian = list(itertools.chain.from_iterable(pos))
@@ -71,5 +79,21 @@ if __name__ == '__main__':
 
     doc.append(clock_packet)
     doc.append(glider_packet)
+
+    displacement = list(map(np.linalg.norm, zip(x, y, z)))
+
+    plot = figure(title="Displacement vs Time", plot_width=600, plot_height=400)
+    plot.line(time, displacement)
+    plot.xaxis.axis_label = 'Time'
+    plot.yaxis.axis_label = 'Displacement'
+    script, div = components(plot)
+
+    speed = list(map(np.linalg.norm, zip(vx, vy, z)))
+
+    plot2 = figure(title="Speed vs Time", plot_width=600, plot_height=400)
+    plot2.line(time, speed)
+    plot2.xaxis.axis_label = 'Time'
+    plot2.yaxis.axis_label = 'Speed'
+    script2, div2 = components(plot2)
 
     socketio.run(app, port=8081, debug=True)

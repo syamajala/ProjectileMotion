@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+from bokeh.plotting import figure, output_file, show
 
 G = 9.8
 
@@ -46,24 +46,16 @@ class Projectile:
 
         return self.h
 
+
 def test():
     p = Projectile(3000, 65)
     tof = np.ceil(p.timeOfFlight())
     time = np.arange(0, tof, 0.1)
     x, y = p.pos(time)
     z = np.zeros(time.size)
-    x = (20925646.3255*.3048) - x
-    y = y*.3048
-    plt.clf()
 
-    plt.subplot(2, 1, 1)
-    plt.plot(time, x)
-    plt.xlabel('time')
-    plt.ylabel('x')
+    output_file('output.html')
 
-    plt.subplot(2, 1, 2)
-    plt.plot(time, y)
-    plt.xlabel('time')
-    plt.ylabel('y')
-
-    plt.savefig("proj.png")
+    p = figure(title='plot', x_axis_label='time', y_axis_label='y')
+    p.line(time, y)
+    show(p)
