@@ -67,25 +67,36 @@
 
         <div class="col-md-4" style="padding-top: 2em;">
           <div class="row">
-            <!-- <select> -->
-            <!--   <option value="hi">hi</option> -->
-            <!--   <option value="bye">bye</option> -->
-            <!-- </select> -->
-            {{ div|safe }}
+            <select class="default" id="topPlot" name="topPlot">
+              {% for id, plot in topPlots.items() %}
+              <option value={{ id|e }}>{{ plot.title|e }}</option>
+              {% endfor %}
+            </select>
+            {% for id, plot in topPlots.items() %}
+            {{ plot.div|safe }}
+            {% endfor %}
           </div>
           <div class="row">
-            <!-- <select> -->
-            <!--   <option value="hi">hi</option> -->
-            <!--   <option value="bye">bye</option> -->
-            <!-- </select> -->
-            {{ div2|safe }}
+            <select class="default" id="bottomPlot" name="bottomPlot">
+              {% for id, plot in bottomPlots.items() %}
+              <option value={{ id|e }}>{{ plot.title|e }}</option>
+              {% endfor %}
+            </select>
+            {% for id, plot in bottomPlots.items() %}
+              {{ plot.div|safe }}
+            {% endfor %}
           </div>
         </div>
     </div>
 
     <script src="/js/viz.js"></script>
     <script src="/js/messages.js"></script>
-    {{ script|safe }}
-    {{ script2|safe }}
+    <script src="/js/plots.js"></script>
+    {% for id, plot in topPlots.items() %}
+    {{ plot.script|safe }}
+    {% endfor %}
+    {% for id, plot in bottomPlots.items() %}
+    {{ plot.script|safe }}
+    {% endfor %}
   </body>
 </html>

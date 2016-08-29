@@ -1,17 +1,36 @@
 <html>
   <head>
     <style>
-
-
-      </style>
-
+      .showMe{
+      display:none;
+      }
+    </style>
   </head>
   <body>
-<script src="/js/d3js/d3.min.js"></script>
-<script>
+    <select class="default" id="security_question_1" name="security_question_1">
+      <option value="" selected>Select question...</option>
+      <option value="div1">Question One</option>
+      <option value="div2">Question Two</option>
+      <option value="div3">Question Three</option>
+      <option value="div4">Question Four</option>
+    </select>
+    <div class="showMe" id="div1">Value Selected 1</div>
+    <div class="showMe" id="div2">Value Selected 2</div>
+    <div class="showMe" id="div3">Value Selected 3</div>
+    <div class="showMe" id="div4">Value Selected 4</div>
 
-
-
-</script>
-</body>
+    <script>
+      var elem = document.getElementById("security_question_1");
+      var lastDiv = ""
+      elem.onchange = function(){
+      var hiddenDiv = document.getElementById(elem.options[elem.selectedIndex].value);
+      hiddenDiv.style.display = (this.value == "") ? "none":"block";
+      if (lastDiv != "")
+      {
+      lastDiv.style.display = "none"
+      }
+      lastDiv = hiddenDiv
+      };
+    </script>
+  </body>
 </html>

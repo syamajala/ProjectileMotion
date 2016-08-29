@@ -2,7 +2,6 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 from bokeh.plotting import figure
-from bokeh.layouts import column
 from bokeh.embed import components
 import numpy as np
 import sys
@@ -10,6 +9,7 @@ import itertools
 sys.path.insert(0, 'modules/czml/czml')
 import czml
 from projectile import Projectile
+from bs4 import BeautifulSoup
 
 
 app = Flask(__name__)
@@ -19,13 +19,32 @@ socketio = SocketIO(app)
 @app.route("/")
 def hello():
     temp = render_template('viz.html',
-                           div=div, script=script,
-                           div2=div2, script2=script2)
+                           topPlots=topPlots,
+                           bottomPlots=bottomPlots)
     return temp
 
 @socketio.on('connect')
 def handle_connect():
     emit('loadData', doc.dumps())
+
+
+class Plot():
+
+    def __init__(self, x, y, title, xaxis_label="", yaxis_label=""):
+        self.plot = figure(title=title, plot_width=600, plot_height=400)
+        self.plot.line(x, y)
+        self.plot.xaxis.axis_label = xaxis_label
+        self.plot.yaxis.axis_label = yaxis_label
+
+        script, div = components(self.plot)
+        self.script = script
+        self.div = div
+
+        soup = BeautifulSoup(div, 'lxml')
+        self.divid = soup.find_all('div', class_='plotdiv')[0]['id']
+
+        self.title = title
+
 
 if __name__ == '__main__':
 
@@ -80,20 +99,16 @@ if __name__ == '__main__':
     doc.append(clock_packet)
     doc.append(glider_packet)
 
-    displacement = list(map(np.linalg.norm, zip(x, y, z)))
+    topPlots = {}
 
-    plot = figure(title="Displacement vs Time", plot_width=600, plot_height=400)
-    plot.line(time, displacement)
-    plot.xaxis.axis_label = 'Time'
-    plot.yaxis.axis_label = 'Displacement'
-    script, div = components(plot)
+    displacement = list(map(np.linalg.norm, zip(x, y, z)))
+    p = Plot(time, displacement, "Displacement vs Time", "Time", "Displacement")
+    topPlots[p.divid] = p
+
+    bottomPlots = {}
 
     speed = list(map(np.linalg.norm, zip(vx, vy, z)))
-
-    plot2 = figure(title="Speed vs Time", plot_width=600, plot_height=400)
-    plot2.line(time, speed)
-    plot2.xaxis.axis_label = 'Time'
-    plot2.yaxis.axis_label = 'Speed'
-    script2, div2 = components(plot2)
+    p = Plot(time, speed, "Speed vs Time", "Time", "Speed")
+    bottomPlots[p.divid] = p
 
     socketio.run(app, port=8081, debug=True)

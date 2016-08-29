@@ -1,5 +1,6 @@
 import numpy as np
-from bokeh.plotting import figure, output_file, show
+from bokeh.plotting import figure
+from bokeh.embed import components
 
 G = 9.8
 
@@ -53,9 +54,9 @@ def test():
     time = np.arange(0, tof, 0.1)
     x, y = p.pos(time)
     z = np.zeros(time.size)
-
-    output_file('output.html')
-
-    p = figure(title='plot', x_axis_label='time', y_axis_label='y')
-    p.line(time, y)
-    show(p)
+    displacement = list(map(np.linalg.norm, zip(x, y, z)))
+    plot = figure(title="Displacement vs Time", plot_width=600, plot_height=400)
+    plot.line(time, displacement)
+    plot.xaxis.axis_label = 'Time'
+    plot.yaxis.axis_label = 'Displacement'
+    script, div = components(plot)
