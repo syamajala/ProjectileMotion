@@ -19,6 +19,8 @@ viewer.scene.skyBox = new Cesium.SkyBox({
     }
 });
 
+viewer.scene.globe.enableLighting = true;
+
 var socket = io.connect('http://dev.brokensymlink.net', {
     remeberTransport: false,
     transports: ['websocket']
@@ -26,6 +28,12 @@ var socket = io.connect('http://dev.brokensymlink.net', {
 
 socket.on('loadData', function (data) {
     data = JSON.parse(data);
+    var model = {
+        "show": true,
+        gltf: "/images/AVMT300.gltf"
+    }
+
+    data[2].model = model;
     viewer.dataSources.add(Cesium.CzmlDataSource.load(data)).then(function(ds) {
         viewer.trackedEntity = ds.entities.getById('path');
     });

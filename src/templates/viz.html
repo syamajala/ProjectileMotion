@@ -60,7 +60,7 @@
           <div class="row">
             <div id="cesiumContainer"></div>
           </div>
-            <div class="row" style="height: 25em;">
+            <div class="row" style="height: 20em;">
               <div id="messages"></div>
             </div>
         </div>
@@ -69,7 +69,9 @@
           <div class="row">
             <select class="default" id="topPlot" name="topPlot">
               {% for id, plot in topPlots.items() %}
-              <option value={{ id|e }}>{{ plot.title|e }}</option>
+              <option value={{ id|e }}>
+                {{ plot.title|e }}
+              </option>
               {% endfor %}
             </select>
             {% for id, plot in topPlots.items() %}
@@ -79,7 +81,9 @@
           <div class="row">
             <select class="default" id="bottomPlot" name="bottomPlot">
               {% for id, plot in bottomPlots.items() %}
-              <option value={{ id|e }}>{{ plot.title|e }}</option>
+              <option value={{ id|e }}>
+                {{ plot.title|e }}
+              </option>
               {% endfor %}
             </select>
             {% for id, plot in bottomPlots.items() %}
