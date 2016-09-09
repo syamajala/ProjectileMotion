@@ -15,7 +15,7 @@ var data = {
 
     links: [{
         source: "WCS",
-        target: "CND"
+        target: "CND",
     }, {
         source: "CND",
         target: "SPY"
@@ -28,6 +28,10 @@ var data = {
 var c10 = d3.scaleOrdinal(d3.schemeCategory10)
 var svg = d3.select("#messages")
     .append("svg");
+
+var lineFunction = d3.line()
+    .x(function(d) { return d.x; })
+    .y(function(d) { return d.y; });
 
 var links = svg.selectAll("link")
     .data(data.links)
@@ -50,6 +54,50 @@ var links = svg.selectAll("link")
     })
     .attr("fill", "none")
     .attr("stroke", "white");
+
+var msg_paths = svg.selectAll("link")
+    .data(data.links)
+    .enter()
+    .append("path")
+    .attr("id", function(l) {
+        return l.source+"_"+l.target
+    })
+    .attr("d", function(l) {
+        var lineData = []
+
+        var sourceNode = data.nodes.filter(function(d, i) {
+            return d.name == l.source
+        })[0];
+        lineData.push({ "x": sourceNode.x, "y": sourceNode.y });
+
+        var targetNode = data.nodes.filter(function(d, i) {
+            return d.name == l.target
+        })[0];
+        lineData.push({ "x": targetNode.x, "y": targetNode.y });
+        return lineFunction(lineData);
+    })
+
+var reverse_msg_paths = svg.selectAll("link")
+    .data(data.links)
+    .enter()
+    .append("path")
+    .attr("id", function(l) {
+        return l.target+"_"+l.source
+    })
+    .attr("d", function(l) {
+        var lineData = []
+
+        var sourceNode = data.nodes.filter(function(d, i) {
+            return d.name == l.target
+        })[0];
+        lineData.push({ "x": sourceNode.x, "y": sourceNode.y });
+
+        var targetNode = data.nodes.filter(function(d, i) {
+            return d.name == l.source
+        })[0];
+        lineData.push({ "x": targetNode.x, "y": targetNode.y });
+        return lineFunction(lineData);
+    })
 
 var radius = 25;
 
@@ -90,17 +138,29 @@ function myFunc() {
         time: 4.0
     }];
 
-    var msg = svg.selectAll("msg")
+    var startMsgs = svg.selectAll("msg")
         .data(msgData)
         .enter()
         .append("text")
-        .attr("x", function(mData) {
-            var sourceNode = data.nodes.filter(function(d) {
-                return d.name == mData.from
-            })[0];
-            d3.select(this).attr("y", sourceNode.y);
-            return sourceNode.x
+        .attr("class", "msg")
+        .append("textPath")
+        .attr("xlink:href", function(mData) {
+            return '#'.concat(mData.from, '_', mData.to);
         })
+        .style("text-anchor", "middle")
         .text(function(d) { return d.name });
 
+    for (i = 0; i < msgData.length; i++)
+    {
+        var msg = msgData[i];
+        var startPathId = '#'.concat(msg.from, '_', msg.to);
+        var endPathId = '#'.concat(msg.to, '_', msg.from);
+        var startPath = svg.select(startPathId);
+        var endPath = svg.select(endPathId);
+        startPath
+            .transition().duration(2000)
+            .attr("d", endPath.attr("d"));
+    }
+
+    d3.selectAll('.msg').transition().delay(2000).remove();
 }
