@@ -27,6 +27,7 @@ var socket = io.connect('http://dev.brokensymlink.net', {
 });
 
 socket.on('loadData', function (data) {
+
     data = JSON.parse(data);
     var model = {
         "show": true,

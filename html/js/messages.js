@@ -1,16 +1,16 @@
 var data = {
     nodes: [{
         name: "WCS",
-        x: 200,
-        y: 200
+        x: 45,
+        y: 170
     }, {
         name: "CND",
-        x: 400,
-        y: 300
+        x: 300,
+        y: 270
     }, {
         name: "SPY",
-        x: 400,
-        y: 100
+        x: 300,
+        y: 70
     }],
 
     links: [{
@@ -84,23 +84,36 @@ var labels = svg.selectAll("label")
     .text(function(d) { return d.name });
 
 function messageFlow() {
+
     var msgData = [{
         id: 0,
         name: "MT-230",
         from: "CND",
         to: "WCS",
         time: 3.0
-    }, {
-        id: 1,
-        name: "MT-071",
-        from: "WCS",
-        to: "CND",
-        time: 4.0
-    }];
+    },//  {
+    //     id: 1,
+    //     name: "MT-071",
+    //     from: "WCS",
+    //     to: "CND",
+    //     time: 4.0
+    // }
+                  ];
 
     var lineFunction = d3.line()
         .x(function(d) { return d.x; })
         .y(function(d) { return d.y; });
+
+    function buildPaths(source, target) {
+            var lineData = []
+
+            var sourceNode = findNode(source);
+            lineData.push({ "x": sourceNode.x, "y": sourceNode.y });
+
+            var targetNode = findNode(target);
+            lineData.push({ "x": targetNode.x, "y": targetNode.y });
+            return lineFunction(lineData);
+    }
 
     var msgPaths = svg.selectAll("link")
         .data(msgData)
@@ -110,14 +123,7 @@ function messageFlow() {
             return msg.from.concat("_", msg.to, msg.id.toString());
         })
         .attr("d", function(msg) {
-            var lineData = []
-
-            var sourceNode = findNode(msg.from);
-            lineData.push({ "x": sourceNode.x, "y": sourceNode.y });
-
-            var targetNode = findNode(msg.to);
-            lineData.push({ "x": targetNode.x, "y": targetNode.y });
-            return lineFunction(lineData);
+            return buildPaths(msg.from, msg.to);
         });
 
     var reverseMsgPaths = svg.selectAll("link")
@@ -128,14 +134,7 @@ function messageFlow() {
             return msg.to.concat("_", msg.from, msg.id.toString());
         })
         .attr("d", function(msg) {
-            var lineData = []
-
-            var sourceNode = findNode(msg.to);
-            lineData.push({ "x": sourceNode.x, "y": sourceNode.y });
-
-            var targetNode = findNode(msg.from);
-            lineData.push({ "x": targetNode.x, "y": targetNode.y });
-            return lineFunction(lineData);
+            return buildPaths(msg.to, msg.from);
         });
 
     var startMsgs = svg.selectAll("msg")
@@ -157,10 +156,14 @@ function messageFlow() {
         var endPathId = '#'.concat(msg.to, '_', msg.from, msg.id.toString());
         var startPath = svg.select(startPathId);
         var endPath = svg.select(endPathId);
+
         startPath
-            .transition().duration(2000)
+            .transition()
+            .duration(2000)
             .attr("d", endPath.attr("d")).remove();
+
         endPath.transition().delay(2000).remove();
+
         svg.selectAll(".msg").transition().delay(2000).remove();
     }
 }
