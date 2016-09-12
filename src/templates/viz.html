@@ -57,49 +57,39 @@
 
     <div class="container-fluid">
         <div class="col-md-8">
+
           <div class="row">
             <div id="cesiumContainer"></div>
           </div>
-            <div class="row" style="height: 20em;">
-              <div id="messages"></div>
-            </div>
+
         </div>
 
-        <div class="col-md-4" style="padding-top: 2em;">
+        <div class="col-md-4">
+
           <div class="row">
-            <select class="default" id="topPlot" name="topPlot">
-              {% for id, plot in topPlots.items() %}
+            <select class="default" id="plot_select" name="plot">
+              {% for id, plot in plots.items() %}
               <option value={{ id|e }}>
                 {{ plot.title|e }}
               </option>
               {% endfor %}
             </select>
-            {% for id, plot in topPlots.items() %}
+            {% for id, plot in plots.items() %}
             {{ plot.div|safe }}
             {% endfor %}
           </div>
-          <div class="row">
-            <select class="default" id="bottomPlot" name="bottomPlot">
-              {% for id, plot in bottomPlots.items() %}
-              <option value={{ id|e }}>
-                {{ plot.title|e }}
-              </option>
-              {% endfor %}
-            </select>
-            {% for id, plot in bottomPlots.items() %}
-              {{ plot.div|safe }}
-            {% endfor %}
+
+          <div class="row" style="height: 20em">
+            <div id="messages"></div>
           </div>
+
         </div>
     </div>
 
     <script src="/js/viz.js"></script>
     <script src="/js/messages.js"></script>
     <script src="/js/plots.js"></script>
-    {% for id, plot in topPlots.items() %}
-    {{ plot.script|safe }}
-    {% endfor %}
-    {% for id, plot in bottomPlots.items() %}
+    {% for id, plot in plots.items() %}
     {{ plot.script|safe }}
     {% endfor %}
   </body>

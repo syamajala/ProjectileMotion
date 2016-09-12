@@ -1,23 +1,8 @@
-var topelem = document.getElementById("topPlot");
-var toplastDiv = ""
-topelem.onchange = function(){
-    var hiddenDiv = document.getElementById(topelem.options[topelem.selectedIndex].value);
+var plotelem = document.getElementById("plot_select");
+var plotlastDiv = document.getElementById("plot0")
+plotelem.onchange = function(){
+    var hiddenDiv = document.getElementById(plotelem.options[plotelem.selectedIndex].value);
     hiddenDiv.style.display = (this.value == "") ? "none":"block";
-    if (toplastDiv != "")
-    {
-        toplastDiv.style.display = "none"
-    }
-    toplastDiv = hiddenDiv
-};
-
-var bottomelem = document.getElementById("bottomPlot");
-var bottomlastDiv = ""
-bottomelem.onchange = function(){
-    var hiddenDiv = document.getElementById(bottomelem.options[bottomelem.selectedIndex].value);
-    hiddenDiv.style.display = (this.value == "") ? "none":"block";
-    if (bottomlastDiv != "")
-    {
-        bottomlastDiv.style.display = "none"
-    }
-    bottomlastDiv = hiddenDiv
+    plotlastDiv.style.display = "none"
+    plotlastDiv = hiddenDiv
 };

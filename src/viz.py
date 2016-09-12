@@ -6,6 +6,7 @@ from bokeh.embed import components
 import numpy as np
 import sys
 import itertools
+import collections
 sys.path.insert(0, 'modules/czml/czml')
 import czml
 from projectile import Projectile
@@ -19,8 +20,7 @@ socketio = SocketIO(app)
 @app.route("/")
 def hello():
     temp = render_template('viz.html',
-                           topPlots=topPlots,
-                           bottomPlots=bottomPlots)
+                           plots=plots)
     return temp
 
 @socketio.on('connect')
@@ -30,18 +30,27 @@ def handle_connect():
 
 class Plot():
 
+    plot_id = 0
+
     def __init__(self, x, y, title, xaxis_label="", yaxis_label=""):
         self.plot = figure(title=title, plot_width=600, plot_height=400)
         self.plot.line(x, y)
         self.plot.xaxis.axis_label = xaxis_label
         self.plot.yaxis.axis_label = yaxis_label
 
+        self.plot_id = "plot%d" % Plot.plot_id
+        Plot.plot_id += 1
+
         script, div = components(self.plot)
         self.script = script
-        self.div = div
 
         soup = BeautifulSoup(div, 'lxml')
-        self.divid = soup.find_all('div', class_='plotdiv')[0]['id']
+        bk_root = soup.find('div', class_='bk-root')
+        bk_root['id'] = self.plot_id
+        bk_root['style'] = "display: none"
+        if self.plot_id == 'plot0':
+            bk_root['style'] = "display: block"
+        self.div = str(bk_root)
 
         self.title = title
 
@@ -54,11 +63,10 @@ if __name__ == '__main__':
 
     clock_packet = czml.CZMLPacket(id="document",
                                    name="CZML Path",
-                                   version = "1.0",
+                                   version="1.0",
                                    clock={"interval": "2000-01-01T11:58:55Z/2000-01-01T23:58:55Z",
                                           "currentTime:":"2000-01-01T11:58:55Z",
                                           "multiplier": 5})
-
 
     glider_packet = czml.CZMLPacket(id="path",
                                     name="path with GPS flight data",
@@ -99,16 +107,15 @@ if __name__ == '__main__':
     doc.append(clock_packet)
     doc.append(glider_packet)
 
-    topPlots = {}
+    plots = collections.OrderedDict()
 
     displacement = list(map(np.linalg.norm, zip(x, y, z)))
     p = Plot(time, displacement, "Displacement vs Time", "Time", "Displacement")
-    topPlots[p.divid] = p
-
-    bottomPlots = {}
+    p.default = True
+    plots[p.plot_id] = p
 
     speed = list(map(np.linalg.norm, zip(vx, vy, z)))
     p = Plot(time, speed, "Speed vs Time", "Time", "Speed")
-    bottomPlots[p.divid] = p
+    plots[p.plot_id] = p
 
     socketio.run(app, port=8081, debug=True)

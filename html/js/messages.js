@@ -1,15 +1,15 @@
 var data = {
     nodes: [{
         name: "WCS",
-        x: 45,
+        x: 195,
         y: 170
     }, {
         name: "CND",
-        x: 300,
+        x: 450,
         y: 270
     }, {
         name: "SPY",
-        x: 300,
+        x: 450,
         y: 70
     }],
 

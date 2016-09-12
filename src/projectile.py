@@ -4,7 +4,8 @@ from bokeh.embed import components
 
 G = 9.8
 
-class Projectile:
+
+class Projectile():
 
     def __init__(self, v0, theta):
 
