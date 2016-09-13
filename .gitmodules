@@ -2,5 +2,5 @@
 	path = src/modules/czml
 	url = https://github.com/syamajala/czml.git
 [submodule "html/js/socket.io-client"]
-	path = html/js/socket.io-client
+	path = src/static/js/socket.io-client
 	url = https://github.com/socketio/socket.io-client.git

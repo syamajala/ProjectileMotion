@@ -17,6 +17,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
+
 @app.route("/")
 def hello():
     temp = render_template('viz.html',
