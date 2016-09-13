@@ -1,27 +1,27 @@
 var data = {
     nodes: [{
-        name: "WCS",
+        name: "N_A",
         x: 195,
         y: 170
     }, {
-        name: "CND",
+        name: "N_B",
         x: 450,
         y: 270
     }, {
-        name: "SPY",
+        name: "N_C",
         x: 450,
         y: 70
     }],
 
     links: [{
-        source: "WCS",
-        target: "CND",
+        source: "N_A",
+        target: "N_B",
     }, {
-        source: "CND",
-        target: "SPY"
+        source: "N_B",
+        target: "N_C"
     }, {
-        source: "WCS",
-        target: "SPY"
+        source: "N_A",
+        target: "N_C"
     }]
 };
 
@@ -41,16 +41,12 @@ var links = svg.selectAll("link")
     .append("line")
     .attr("class", "link")
     .attr("x1", function(l) {
-        var sourceNode = data.nodes.filter(function(d, i) {
-            return d.name == l.source
-        })[0];
+        var sourceNode = findNode(l.source);
         d3.select(this).attr("y1", sourceNode.y);
         return sourceNode.x
     })
     .attr("x2", function(l) {
-        var targetNode = data.nodes.filter(function(d, i) {
-            return d.name == l.target
-        })[0];
+        var targetNode = findNode(l.target);
         d3.select(this).attr("y2", targetNode.y);
         return targetNode.x
     })
@@ -87,15 +83,15 @@ function messageFlow() {
 
     var msgData = [{
         id: 0,
-        name: "MT-230",
-        from: "CND",
-        to: "WCS",
+        name: "Hi",
+        from: "N_B",
+        to: "N_A",
         time: 3.0
     },//  {
     //     id: 1,
-    //     name: "MT-071",
-    //     from: "WCS",
-    //     to: "CND",
+    //     name: "Bye",
+    //     from: "N_A",
+    //     to: "N_B",
     //     time: 4.0
     // }
                   ];
