@@ -24,6 +24,7 @@ def hello():
                            plots=plots)
     return temp
 
+
 @socketio.on('connect')
 def handle_connect():
     emit('loadData', doc.dumps())
