@@ -21,7 +21,7 @@ viewer.scene.skyBox = new Cesium.SkyBox({
 
 viewer.scene.globe.enableLighting = true;
 
-var socket = io.connect('http://dev.brokensymlink.net', {
+var socket = io.connect('http://'.concat(location.hostname, ':', location.port), {
     remeberTransport: false,
     transports: ['websocket']
 });
@@ -46,18 +46,36 @@ socket.on('loadCesiumData', function(data) {
 socket.on('loadMessageData', function(mdata) {
 
     mdata = JSON.parse(mdata)
+    var rStack = [];
 
     var clock = viewer.clock;
-
     clock.onTick.addEventListener(function() {
         var time = Cesium.JulianDate.secondsDifference(clock.currentTime, clock.startTime);
-        if (mdata.length > 0) {
 
-            if (time >= mdata[0]["time"])
+        if (clock.multiplier > 0) {
+
+            if (mdata.length > 0 && time >= mdata[0]["time"])
             {
                 var msg = mdata.pop();
 
-                sendMessage(svg, graph, msg);
+                sendMessage(svg, graph, [msg]);
+                var oFrom = msg.from;
+                msg.from = msg.to;
+                msg.to = oFrom;
+                rStack.push(msg);
+            }
+        }
+        else if (clock.multiplier < 0)
+        {
+            if (rStack.length > 0 && time <= rStack[0]["time"])
+            {
+                var msg = rStack.pop();
+
+                sendMessage(svg, graph, [msg]);
+                var oFrom = msg.from;
+                msg.from = msg.to;
+                msg.to = oFrom;
+                mdata.push(msg);
             }
         }
     })

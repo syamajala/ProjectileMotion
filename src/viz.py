@@ -33,7 +33,8 @@ def handle_loadCesiumData():
 
 @socketio.on('connect')
 def handle_connect():
-    msgData = [{"id": 0, "name": "MT-230", "from": "WCS", "to": "CND", "time": 4.0}]
+    msgData = [{"id": 0, "name": "MT-230", "from": "CND", "to": "WCS", "time": 3.0},
+               {"id": 1, "name": "MT-071", "from": "WCS", "to": "CND", "time": 6.0}]
 
     emit('loadMessageData', json.dumps(msgData))
 
