@@ -7,6 +7,7 @@ import numpy as np
 import sys
 import itertools
 import collections
+import json
 sys.path.insert(0, 'modules/czml/czml')
 import czml
 from projectile import Projectile
@@ -25,9 +26,16 @@ def hello():
     return temp
 
 
+@socketio.on('loadCesiumData')
+def handle_loadCesiumData():
+    emit('loadCesiumData', doc.dumps())
+
+
 @socketio.on('connect')
 def handle_connect():
-    emit('loadData', doc.dumps())
+    msgData = [{"id": 0, "name": "MT-230", "from": "WCS", "to": "CND", "time": 4.0}]
+
+    emit('loadMessageData', json.dumps(msgData))
 
 
 class Plot():
@@ -68,7 +76,7 @@ if __name__ == '__main__':
                                    version="1.0",
                                    clock={"interval": "2000-01-01T11:58:55Z/2000-01-01T23:58:55Z",
                                           "currentTime:":"2000-01-01T11:58:55Z",
-                                          "multiplier": 5})
+                                          "multiplier": 1})
 
     glider_packet = czml.CZMLPacket(id="path",
                                     name="path with GPS flight data",

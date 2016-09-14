@@ -26,9 +26,10 @@ var socket = io.connect('http://dev.brokensymlink.net', {
     transports: ['websocket']
 });
 
-socket.on('loadData', function (data) {
 
+socket.on('loadCesiumData', function(data) {
     data = JSON.parse(data);
+
     var model = {
         "show": true,
         gltf: "/images/AVMT300.gltf"
@@ -38,4 +39,27 @@ socket.on('loadData', function (data) {
     viewer.dataSources.add(Cesium.CzmlDataSource.load(data)).then(function(ds) {
         viewer.trackedEntity = ds.entities.getById('path');
     });
+
+})
+
+
+socket.on('loadMessageData', function(mdata) {
+
+    mdata = JSON.parse(mdata)
+
+    var clock = viewer.clock;
+
+    clock.onTick.addEventListener(function() {
+        var time = Cesium.JulianDate.secondsDifference(clock.currentTime, clock.startTime);
+        if (mdata.length > 0) {
+
+            if (time >= mdata[0]["time"])
+            {
+                var msg = mdata.pop();
+
+                sendMessage(svg, graph, msg);
+            }
+        }
+    })
+    socket.emit('loadCesiumData');
 });

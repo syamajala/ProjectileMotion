@@ -64,6 +64,8 @@ var labels = svg.selectAll(".label")
     .attr("y", function(d) { return d.y+5; })
     .text(function(d) { return d.name; });
 
+
+
 // var msgData = [{
 //     id: 0,
 //     name: "MT-230",
