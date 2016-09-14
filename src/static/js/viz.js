@@ -46,6 +46,7 @@ socket.on('loadCesiumData', function(data) {
 socket.on('loadMessageData', function(mdata) {
 
     mdata = JSON.parse(mdata)
+
     var rStack = [];
 
     var clock = viewer.clock;
@@ -56,9 +57,11 @@ socket.on('loadMessageData', function(mdata) {
 
             if (mdata.length > 0 && time >= mdata[0]["time"])
             {
-                var msg = mdata.pop();
 
-                sendMessage(svg, graph, [msg]);
+                var msg = mdata.shift();
+
+                sendMessage(svg, graph, [msg], clock.multiplier);
+
                 var oFrom = msg.from;
                 msg.from = msg.to;
                 msg.to = oFrom;
@@ -69,9 +72,10 @@ socket.on('loadMessageData', function(mdata) {
         {
             if (rStack.length > 0 && time <= rStack[0]["time"])
             {
-                var msg = rStack.pop();
+                var msg = rStack.shift();
 
-                sendMessage(svg, graph, [msg]);
+                sendMessage(svg, graph, [msg], Math.abs(clock.multiplier));
+
                 var oFrom = msg.from;
                 msg.from = msg.to;
                 msg.to = oFrom;

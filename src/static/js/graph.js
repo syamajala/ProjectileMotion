@@ -51,7 +51,7 @@ Graph = function() {
     return graph;
 }
 
-function sendMessage(svg, graph, msgData) {
+function sendMessage(svg, graph, msgData, multiplier) {
 
     var lineFunction = d3.line()
         .x(function(d) { return d.x; })
@@ -112,11 +112,11 @@ function sendMessage(svg, graph, msgData) {
 
         startPath
             .transition()
-            .duration(2000)
+            .duration(2000/multiplier)
             .attr("d", endPath.attr("d")).remove();
 
-        endPath.transition().delay(2000).remove();
+        endPath.transition().delay(2000/multiplier).remove();
 
-        svg.selectAll(".msg").transition().delay(2000).remove();
+        svg.selectAll(".msg").transition().delay(2000/multiplier).remove();
     }
 }

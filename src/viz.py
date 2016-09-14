@@ -19,6 +19,12 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
 
+@app.route("/<path:path>")
+def serve_static(path):
+    print("Serving static file: %s" % path)
+    return app.send_static_file(path)
+
+
 @app.route("/")
 def hello():
     temp = render_template('viz.html',
@@ -34,7 +40,7 @@ def handle_loadCesiumData():
 @socketio.on('connect')
 def handle_connect():
     msgData = [{"id": 0, "name": "MT-230", "from": "CND", "to": "WCS", "time": 3.0},
-               {"id": 1, "name": "MT-071", "from": "WCS", "to": "CND", "time": 6.0}]
+               {"id": 1, "name": "MT-071", "from": "WCS", "to": "CND", "time": 5.0}]
 
     emit('loadMessageData', json.dumps(msgData))
 
@@ -77,7 +83,7 @@ if __name__ == '__main__':
                                    version="1.0",
                                    clock={"interval": "2000-01-01T11:58:55Z/2000-01-01T23:58:55Z",
                                           "currentTime:":"2000-01-01T11:58:55Z",
-                                          "multiplier": 1})
+                                          "multiplier": 0.5})
 
     glider_packet = czml.CZMLPacket(id="path",
                                     name="path with GPS flight data",
@@ -129,4 +135,4 @@ if __name__ == '__main__':
     p = Plot(time, speed, "Speed vs Time", "Time", "Speed")
     plots[p.plot_id] = p
 
-    socketio.run(app, port=8081, debug=True)
+    socketio.run(app, host='0.0.0.0', port=8081, debug=True)
