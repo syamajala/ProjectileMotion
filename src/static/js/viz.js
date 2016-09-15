@@ -49,6 +49,13 @@ socket.on('loadMessageData', function(mdata) {
 
     var rStack = [];
 
+    function reverseMsg(msg) {
+        var oFrom = msg.from;
+        msg.from = msg.to;
+        msg.to = oFrom;
+        return msg;
+    };
+
     var clock = viewer.clock;
     clock.onTick.addEventListener(function() {
         var time = Cesium.JulianDate.secondsDifference(clock.currentTime, clock.startTime);
@@ -57,29 +64,19 @@ socket.on('loadMessageData', function(mdata) {
 
             if (mdata.length > 0 && time >= mdata[0]["time"])
             {
-
                 var msg = mdata.shift();
-
                 sendMessage(svg, graph, [msg], clock.multiplier);
-
-                var oFrom = msg.from;
-                msg.from = msg.to;
-                msg.to = oFrom;
-                rStack.push(msg);
+                rStack.push(reverseMsg(msg));
             }
         }
         else if (clock.multiplier < 0)
         {
-            if (rStack.length > 0 && time <= rStack[0]["time"])
+
+            if (rStack.length > 0 && time <= rStack[rStack.length-1]["time"])
             {
-                var msg = rStack.shift();
-
+                var msg = rStack.pop();
                 sendMessage(svg, graph, [msg], Math.abs(clock.multiplier));
-
-                var oFrom = msg.from;
-                msg.from = msg.to;
-                msg.to = oFrom;
-                mdata.push(msg);
+                mdata.unshift(reverseMsg(msg));
             }
         }
     })

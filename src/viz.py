@@ -83,7 +83,7 @@ if __name__ == '__main__':
                                    version="1.0",
                                    clock={"interval": "2000-01-01T11:58:55Z/2000-01-01T23:58:55Z",
                                           "currentTime:":"2000-01-01T11:58:55Z",
-                                          "multiplier": 0.5})
+                                          "multiplier": 1})
 
     glider_packet = czml.CZMLPacket(id="path",
                                     name="path with GPS flight data",
