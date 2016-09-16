@@ -17,6 +17,7 @@ from bs4 import BeautifulSoup
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
+doc = None
 
 
 @app.route("/<path:path>")
@@ -26,53 +27,15 @@ def serve_static(path):
 
 
 @app.route("/")
-def hello():
-    temp = render_template('viz.html',
-                           plots=plots)
-    return temp
+def home():
+    runs = range(1, 101)
+    return render_template('home.html',
+                           runs=runs)
 
 
-@socketio.on('loadCesiumData')
-def handle_loadCesiumData():
-    emit('loadCesiumData', doc.dumps())
-
-
-@socketio.on('connect')
-def handle_connect():
-    msgData = [{"id": 0, "name": "MT-230", "from": "CND", "to": "WCS", "time": 3.0},
-               {"id": 1, "name": "MT-071", "from": "WCS", "to": "CND", "time": 5.0}]
-
-    emit('loadMessageData', json.dumps(msgData))
-
-
-class Plot():
-
-    plot_id = 0
-
-    def __init__(self, x, y, title, xaxis_label="", yaxis_label=""):
-        self.plot = figure(title=title, plot_width=600, plot_height=400)
-        self.plot.line(x, y)
-        self.plot.xaxis.axis_label = xaxis_label
-        self.plot.yaxis.axis_label = yaxis_label
-
-        self.plot_id = "plot%d" % Plot.plot_id
-        Plot.plot_id += 1
-
-        script, div = components(self.plot)
-        self.script = script
-
-        soup = BeautifulSoup(div, 'lxml')
-        bk_root = soup.find('div', class_='bk-root')
-        bk_root['id'] = self.plot_id
-        bk_root['style'] = "display: none"
-        if self.plot_id == 'plot0':
-            bk_root['style'] = "display: block"
-        self.div = str(bk_root)
-
-        self.title = title
-
-
-if __name__ == '__main__':
+@app.route("/mc<int:num>")
+def monte_carlo_data(num):
+    global doc
 
     doc = czml.CZML()
     packet1 = czml.CZMLPacket(id='document', version='1.0')
@@ -134,5 +97,53 @@ if __name__ == '__main__':
     speed = list(map(np.linalg.norm, zip(vx, vy, z)))
     p = Plot(time, speed, "Speed vs Time", "Time", "Speed")
     plots[p.plot_id] = p
+
+    return render_template('viz.html',
+                           plots=plots)
+
+
+@socketio.on('loadCesiumData')
+def handle_loadCesiumData():
+    emit('loadCesiumData', doc.dumps())
+
+
+@socketio.on('loadMessageData')
+def handle_loadMessageData(mc_num):
+
+    msgData = [{"id": 0, "name": "MT-230", "from": "CND", "to": "WCS", "time": 3.0},
+               {"id": 1, "name": "MT-071", "from": "WCS", "to": "CND", "time": 5.0}]
+
+    emit('loadMessageData', json.dumps(msgData))
+
+
+class Plot():
+
+    plot_id = 0
+
+    def __init__(self, x, y, title, xaxis_label="", yaxis_label=""):
+        self.plot = figure(title=title, plot_width=600, plot_height=400)
+        self.plot.line(x, y)
+        self.plot.xaxis.axis_label = xaxis_label
+        self.plot.yaxis.axis_label = yaxis_label
+
+        self.plot_id = "plot%d" % Plot.plot_id
+        Plot.plot_id += 1
+
+        script, div = components(self.plot)
+        self.script = script
+
+        soup = BeautifulSoup(div, 'lxml')
+        bk_root = soup.find('div', class_='bk-root')
+        bk_root['id'] = self.plot_id
+        bk_root['style'] = "display: none"
+        # fix this
+        if self.plot_id == 'plot0':
+            bk_root['style'] = "display: block"
+        self.div = str(bk_root)
+
+        self.title = title
+
+
+if __name__ == '__main__':
 
     socketio.run(app, host='0.0.0.0', port=8081, debug=True)

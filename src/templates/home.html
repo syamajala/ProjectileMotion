@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      table, th, td {
+      border: 1px solid black;
+      }
+
+      table {
+      border-collapse: collapse;
+      width: 100%;
+      }
+
+      th {
+      background-color: #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+
+      <tr>
+      {% for run in runs %}
+      {% if run <= 10 %}
+      <th>Run</th>
+      {% endif %}
+      {% endfor %}
+      </tr>
+
+      {% for run in runs %}
+      {% if run % 10 == 1 %}
+      <tr>
+      {% endif %}
+      <td>
+        <a href="/mc{{ run }}">{{ run }}</a>
+      </td>
+      {% if run % 10 == 0 %}
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </table>
+  </body>
+</html>

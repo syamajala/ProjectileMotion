@@ -27,6 +27,10 @@ var socket = io.connect('http://'.concat(location.hostname, ':', location.port),
 });
 
 
+socket.on('connect', function() {
+    socket.emit('loadMessageData', window.location.pathname);
+})
+
 socket.on('loadCesiumData', function(data) {
     data = JSON.parse(data);
 
