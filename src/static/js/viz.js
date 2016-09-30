@@ -1,6 +1,6 @@
 var viewer = new Cesium.Viewer('cesiumContainer', {
     // sceneModePicker : false,
-    vrButton: true,
+    // vrButton: true,
     geocoder : false,
     baseLayerPicker : false,
     imageryProvider : Cesium.createTileMapServiceImageryProvider({
@@ -19,7 +19,7 @@ viewer.scene.skyBox = new Cesium.SkyBox({
         negativeZ : '/images/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_mz.jpg',
     }
 });
-viewer.clock.shouldAnimate = false;
+// viewer.clock.shouldAnimate = false;
 viewer.scene.globe.enableLighting = true;
 
 var socket = io.connect('http://'.concat(location.hostname, ':', location.port), {
@@ -43,7 +43,13 @@ socket.on('loadCesiumData', function(data) {
     data[2].model = model;
 
     viewer.dataSources.add(Cesium.CzmlDataSource.load(data)).then(function(ds) {
-        viewer.trackedEntity = ds.entities.getById('path');
+        pth = ds.entities.getById('path');
+        viewer.trackedEntity = pth;
+
+        var gui = new dat.GUI({ autoPlace: false });
+        gui.add(pth, 'show').name(pth.name)
+        var cesiumContainer = document.getElementById('toolbar');
+        cesiumContainer.appendChild(gui.domElement);
     });
 
 })

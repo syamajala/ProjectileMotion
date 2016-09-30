@@ -53,7 +53,8 @@ def monte_carlo_data(num):
     material_pack = czml.Material(polylineOutline=polylineOutline_pack)
     path_pack = czml.Path(material=material_pack,
                           width=8,
-                          leadTime=0)
+                          leadTime=0,
+                          show=True)
     glider_packet.path = path_pack
 
     position_pack = czml.Position(epoch="2000-01-01T11:58:55Z")
