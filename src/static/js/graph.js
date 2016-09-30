@@ -100,7 +100,8 @@ function sendMessage(svg, graph, msgData, multiplier) {
             return '#'.concat(msg.from, '_', msg.to, msg.id.toString());
         })
         .attr("startOffset", "10%")
-        .text(function(d) { return d.name });
+        .text(function(d) { return d.name })
+
 
     for (i = 0; i < msgData.length; i++)
     {

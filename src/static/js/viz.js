@@ -1,6 +1,7 @@
 var viewer = new Cesium.Viewer('cesiumContainer', {
     // sceneModePicker : false,
     // vrButton: true,
+    fullscreenButton: false,
     geocoder : false,
     baseLayerPicker : false,
     imageryProvider : Cesium.createTileMapServiceImageryProvider({
