@@ -43,7 +43,7 @@ def monte_carlo_data(num):
                                           "multiplier": 1})
 
     glider_packet = czml.CZMLPacket(id="path",
-                                    name="path with GPS flight data",
+                                    name="path",
                                     availability="2000-01-01T11:58:55Z/2000-01-01T23:58:55Z")
 
     p = Projectile(4000, 45)

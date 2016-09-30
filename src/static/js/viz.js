@@ -33,6 +33,8 @@ socket.on('connect', function() {
     socket.emit('loadMessageData', window.location.pathname);
 })
 
+var gui = new dat.GUI({ autoPlace: false });
+
 socket.on('loadCesiumData', function(data) {
     data = JSON.parse(data);
 
@@ -47,13 +49,20 @@ socket.on('loadCesiumData', function(data) {
         pth = ds.entities.getById('path');
         viewer.trackedEntity = pth;
 
-        var gui = new dat.GUI({ autoPlace: false });
-        gui.add(pth, 'show').name(pth.name);
-        gui.close();
-        var cesiumContainer = document.getElementById('toolbar');
-        cesiumContainer.appendChild(gui.domElement);
-    });
+        var entities = ds['entities']['values']
+        for (var i = 0; i < entities.length; i++)
+        {
+            var entity = entities[i];
+            if(entity['name'].indexOf('path') == 0)
+            {
+                gui.add(entity, 'show').name(entity['name']);
+            }
+        }
 
+        gui.close();
+        var toolbar = document.getElementById('toolbar');
+        toolbar.appendChild(gui.domElement);
+    });
 })
 
 
