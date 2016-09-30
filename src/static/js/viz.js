@@ -47,7 +47,8 @@ socket.on('loadCesiumData', function(data) {
         viewer.trackedEntity = pth;
 
         var gui = new dat.GUI({ autoPlace: false });
-        gui.add(pth, 'show').name(pth.name)
+        gui.add(pth, 'show').name(pth.name);
+        gui.close();
         var cesiumContainer = document.getElementById('toolbar');
         cesiumContainer.appendChild(gui.domElement);
     });
