@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from flask import Flask, render_template, session
 from flask_socketio import SocketIO, emit
-from flask.ext.session import Session
+from flask_session import Session
 from bokeh import palettes
 import numpy as np
 import json
