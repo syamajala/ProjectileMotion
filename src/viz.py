@@ -1,17 +1,37 @@
 #!/usr/bin/env python
-from flask import Flask, render_template
+from flask import Flask, render_template, session
 from flask_socketio import SocketIO, emit
+from flask.ext.session import Session
+from bokeh import palettes
 import numpy as np
-import itertools
 import json
+import itertools
 import utils
+import datetime
+import dateutil.parser
 from modules.czml import czml
 from projectile import Projectile
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
+
+
+def build_start(start, seconds):
+    begin = dateutil.parser.parse(start)
+    delta = datetime.timedelta(seconds=seconds)
+    new_start = (begin + delta).isoformat()[:-6]
+
+    return new_start+'Z'
+
+
+def build_interval(start, seconds):
+    begin = dateutil.parser.parse(start)
+    delta = datetime.timedelta(seconds=seconds)
+    end = (begin + delta).isoformat()[:-6]
+
+    time = start+'/'+end+'Z'
+    return time
 
 
 @app.route("/<path:path>")
@@ -27,59 +47,89 @@ def home():
                            runs=runs)
 
 
-@app.route("/mc<int:num>")
-def monte_carlo_data(num):
-    global doc
+def point_pkt(pos):
+    time, x, y, z, pid, color = pos
+    start = build_start("2000-01-01T11:58:55Z", time)
+    interval = build_interval(start, session['tof'])
 
-    doc = czml.CZML()
-    packet1 = czml.CZMLPacket(id='document', version='1.0')
-    doc.packets.append(packet1)
-
-    clock_packet = czml.CZMLPacket(id="document",
-                                   name="CZML Path",
-                                   version="1.0",
-                                   clock={"interval": "2000-01-01T11:58:55Z/2000-01-01T23:58:55Z",
-                                          "currentTime:":"2000-01-01T11:58:55Z",
-                                          "multiplier": 1})
-
-    glider_packet = czml.CZMLPacket(id="path",
-                                    name="path",
-                                    availability="2000-01-01T11:58:55Z/2000-01-01T23:58:55Z")
-
-    p = Projectile(4000, 45)
-
-    color_pack = czml.Color(rgba=utils.hex2rgb(p.color))
-    polylineOutline_pack = czml.PolylineOutline(color=color_pack)
-    material_pack = czml.Material(polylineOutline=polylineOutline_pack)
-    path_pack = czml.Path(material=material_pack,
-                          width=8,
-                          leadTime=0,
-                          show=True)
-    glider_packet.path = path_pack
+    glider_packet = czml.CZMLPacket(id="point" + str(pid),
+                                    name="point" + str(pid),
+                                    availability=interval)
 
     position_pack = czml.Position(epoch="2000-01-01T11:58:55Z")
+    position_pack.cartesian = [x, y, z]
+    glider_packet.position = position_pack
 
+    color_pack = czml.Color(rgba=color)
+    point = czml.Point(color=color_pack,
+                       show=True,
+                       pixelSize=5)
+    glider_packet.point = point
+
+    return glider_packet
+
+
+@app.route("/mc<int:num>")
+def monte_carlo_data(num):
+
+    p = Projectile(4000, 45)
     tof = np.ceil(p.timeOfFlight())
     time = np.arange(0, tof, 0.1)
     x, y = p.pos(time)
     y = (20925646.3255*.3048) + y
     z = np.zeros(time.size)
 
+    session['tof'] = tof
     vx, vy = p.vel(time)
-
-    pos = zip(time, x, y, z)
-
-    position_pack.cartesian = list(itertools.chain.from_iterable(pos))
-
-    glider_packet.position = position_pack
-
-    doc.append(clock_packet)
-    doc.append(glider_packet)
 
     p.make_plot(time, y, "Alt vs Time", "Time", "Alt")
 
     speed = list(map(np.linalg.norm, zip(vx, vy)))
     p.make_plot(time, speed, "Speed vs Time", "Time", "Speed")
+
+    doc = czml.CZML()
+    packet1 = czml.CZMLPacket(id='document', version='1.0')
+    doc.packets.append(packet1)
+
+    interval = build_interval("2000-01-01T11:58:55Z", tof)
+
+    clock_packet = czml.CZMLPacket(id="document",
+                                   name="CZML Path",
+                                   version="1.0",
+                                   clock={"interval": interval,
+                                          "currentTime:": "2000-01-01T11:58:50Z",
+                                          "multiplier": 1,
+                                          "range": "CLAMPED"})
+    color = utils.hex2rgb(p.color)
+    pos = zip(time, x, y, z, range(0, len(x)), [color]*len(x))
+    pkts = list(map(point_pkt, pos))
+
+    doc.append(clock_packet)
+    for pkt in pkts:
+        doc.append(pkt)
+
+    glider_packet = czml.CZMLPacket(id="path",
+                                    name="path",
+                                    availability=interval)
+
+    color_pack = czml.Color(rgba=utils.hex2rgb(palettes.Set3_12[3]))
+    polylineOutline_pack = czml.PolylineOutline(color=color_pack)
+    material_pack = czml.Material(polylineOutline=polylineOutline_pack)
+    path_pack = czml.Path(material=material_pack,
+                          width=5,
+                          leadTime=0,
+                          show=True)
+    glider_packet.path = path_pack
+
+    position_pack = czml.Position(epoch="2000-01-01T11:58:55Z")
+    pos = zip(time, x, y, z)
+
+    position_pack.cartesian = list(itertools.chain.from_iterable(pos))
+    glider_packet.position = position_pack
+
+    doc.append(glider_packet)
+
+    session['doc'] = doc
 
     return render_template('viz.html',
                            plots=p.plots)
@@ -87,6 +137,7 @@ def monte_carlo_data(num):
 
 @socketio.on('loadCesiumData')
 def handle_loadCesiumData():
+    doc = session.get('doc', None)
     emit('loadCesiumData', doc.dumps())
 
 
@@ -100,5 +151,9 @@ def handle_loadMessageData(mc_num):
 
 
 if __name__ == '__main__':
+    app.config['SESSION_TYPE'] = 'redis'
+    app.config['SECRET_KEY'] = 'mysecretkey1'
+    sess = Session()
+    sess.init_app(app)
 
     socketio.run(app, host='0.0.0.0', port=8081, debug=True)

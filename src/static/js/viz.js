@@ -10,7 +10,9 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
         credit : 'Imagery courtesy Natual Earth'}),
 });
 
-viewer.scene.skyBox = new Cesium.SkyBox({
+var scene = viewer.scene;
+
+scene.skyBox = new Cesium.SkyBox({
     sources : {
         positiveX : '/images/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_px.jpg',
         negativeX : '/images/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_mx.jpg',
@@ -20,8 +22,9 @@ viewer.scene.skyBox = new Cesium.SkyBox({
         negativeZ : '/images/TychoSkymapII.t3_08192x04096/TychoSkymapII.t3_08192x04096_80_mz.jpg',
     }
 });
+
 // viewer.clock.shouldAnimate = false;
-viewer.scene.globe.enableLighting = true;
+scene.globe.enableLighting = true;
 
 var socket = io.connect('http://'.concat(location.hostname, ':', location.port), {
     remeberTransport: false,
@@ -38,16 +41,7 @@ var gui = new dat.GUI({ autoPlace: false });
 socket.on('loadCesiumData', function(data) {
     data = JSON.parse(data);
 
-    var model = {
-        "show": true,
-        gltf: "/images/AVMT300.gltf"
-    }
-
-    data[2].model = model;
-
     viewer.dataSources.add(Cesium.CzmlDataSource.load(data)).then(function(ds) {
-        pth = ds.entities.getById('path');
-        viewer.trackedEntity = pth;
 
         var entities = ds['entities']['values']
         for (var i = 0; i < entities.length; i++)
