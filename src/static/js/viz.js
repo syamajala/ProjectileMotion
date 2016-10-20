@@ -44,18 +44,25 @@ socket.on('loadCesiumData', function(data) {
     viewer.dataSources.add(Cesium.CzmlDataSource.load(data)).then(function(ds) {
 
         var entities = ds['entities']['values']
+        var ec = new Cesium.EntityCollection(ds)
         for (var i = 0; i < entities.length; i++)
         {
             var entity = entities[i];
-            if(entity['name'].indexOf('path') == 0)
+            if(entity['id'].indexOf('point') == 0)
             {
-                gui.add(entity, 'show').name(entity['name']);
+                ec.add(entity)
+            }
+            else if(entity['name'].indexOf('path') == 0)
+            {
+                gui.add(entity, 'show').name(entity['name'])
             }
         }
-
+        gui.add(ec, 'show').name("Points");
         gui.close();
         var toolbar = document.getElementById('toolbar');
         toolbar.appendChild(gui.domElement);
+
+        viewer.zoomTo(ds);
     });
 })
 
@@ -97,5 +104,5 @@ socket.on('loadMessageData', function(mdata) {
             }
         }
     })
-    socket.emit('loadCesiumData');
+    socket.emit('loadPathData');
 });
