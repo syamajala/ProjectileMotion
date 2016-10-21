@@ -104,5 +104,5 @@ socket.on('loadMessageData', function(mdata) {
             }
         }
     })
-    socket.emit('loadPathData');
+    socket.emit('loadCesiumData');
 });
