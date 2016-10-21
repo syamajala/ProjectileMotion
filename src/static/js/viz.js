@@ -23,7 +23,6 @@ scene.skyBox = new Cesium.SkyBox({
     }
 });
 
-// viewer.clock.shouldAnimate = false;
 scene.globe.enableLighting = true;
 
 var socket = io.connect('http://'.concat(location.hostname, ':', location.port), {
@@ -36,7 +35,14 @@ socket.on('connect', function() {
     socket.emit('loadMessageData', window.location.pathname);
 })
 
+viewer.screenshot = function() {
+    this.render();
+    var data = this.canvas.toDataURL('image/jpeg', 1);
+    window.open(data);
+}
+
 var gui = new dat.GUI({ autoPlace: false });
+gui.add(viewer, 'screenshot').name("Screenshot");
 
 socket.on('loadCesiumData', function(data) {
     data = JSON.parse(data);
@@ -64,7 +70,10 @@ socket.on('loadCesiumData', function(data) {
 
         viewer.zoomTo(ds);
     });
+    viewer.clock.tick();
+    viewer.clock.shouldAnimate = false;
 })
+
 
 
 socket.on('loadMessageData', function(mdata) {
