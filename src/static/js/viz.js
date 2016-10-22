@@ -30,8 +30,16 @@ var socket = io.connect('http://'.concat(location.hostname, ':', location.port),
     transports: ['websocket']
 });
 
-
+var reload = false;
 socket.on('connect', function() {
+    if(reload)
+    {
+        location.reload()
+    } else
+    {
+        reload = true;
+    }
+
     socket.emit('loadMessageData', window.location.pathname);
 })
 
@@ -45,6 +53,7 @@ var gui = new dat.GUI({ autoPlace: false });
 gui.add(viewer, 'screenshot').name("Screenshot");
 
 socket.on('loadCesiumData', function(data) {
+
     data = JSON.parse(data);
 
     viewer.dataSources.add(Cesium.CzmlDataSource.load(data)).then(function(ds) {
@@ -58,7 +67,7 @@ socket.on('loadCesiumData', function(data) {
             {
                 ec.add(entity)
             }
-            else if(entity['name'].indexOf('path') == 0)
+            else if(entity['id'].indexOf('path') == 0)
             {
                 gui.add(entity, 'show').name(entity['name'])
             }

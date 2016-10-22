@@ -109,7 +109,7 @@ def monte_carlo_data(num):
         doc.append(pkt)
 
     glider_packet = czml.CZMLPacket(id="path",
-                                    name="path",
+                                    name="Path",
                                     availability=interval)
 
     color_pack = czml.Color(rgba=utils.hex2rgb(palettes.Set3_12[3]))
