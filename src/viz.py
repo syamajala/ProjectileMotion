@@ -83,8 +83,9 @@ def monte_carlo_data(num):
     vx, vy = p.vel(time)
 
     speed = list(map(np.linalg.norm, zip(vx, vy)))
-    p.make_plot(time, speed, "Speed vs Time", "Time", "Speed")
-    p.make_plot(time, y, "Alt vs Time", "Time", "Alt")
+    p.make_plot(time, speed, title="Speed vs Time", xaxis_label="Time", yaxis_label="Speed")
+    p.make_plot(time, y, title="Alt vs Time", xaxis_label="Time", yaxis_label="Alt")
+    p.make_plot(time, x, y, "Trajectory", "Time", "X", "Y")
 
     doc = czml.CZML()
     packet1 = czml.CZMLPacket(id='document', version='1.0')

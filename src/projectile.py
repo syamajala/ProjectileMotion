@@ -10,17 +10,21 @@ G = 9.8
 
 class Plot():
 
-    def __init__(self, x, y, title, plot_id,
-                 xaxis_label="", yaxis_label="", color=""):
+    def __init__(self, x, y, z=None, title="", plot_id=0,
+                 xaxis_label="", yaxis_label="", zaxis_label="", color=""):
 
         self.title = title
         self.plot_id = "plot%d" % plot_id
 
-        line = go.Scatter(x=x, y=y, line={'color': color})
-
         layout = {'title': title,
                   'xaxis': {'title': xaxis_label},
                   'yaxis': {'title': yaxis_label}}
+
+        if z is not None:
+            line = go.Scatter3d(x=x, y=y, z=z, line={'color': color})
+            # layout['zaxis'] = {'title': zaxis_label}
+        else:
+            line = go.Scatter(x=x, y=y, line={'color': color})
 
         fig = {'data': [line], 'layout': layout}
         div = plot(fig, output_type='div', include_plotlyjs=False)
@@ -87,10 +91,10 @@ class Projectile():
 
         return self.h
 
-    def make_plot(self, x, y, title, xaxis_label="", yaxis_label=""):
-        p = Plot(x, y,
-                 title, self.plot_id,
-                 xaxis_label, yaxis_label,
+    def make_plot(self, x, y, z=None, title="", xaxis_label="", yaxis_label="", zaxis_label=""):
+        p = Plot(x, y, z=z,
+                 title=title, plot_id=self.plot_id,
+                 xaxis_label=xaxis_label, yaxis_label=yaxis_label, zaxis_label=zaxis_label,
                  color=self.color)
         self.plot_id += 1
         self.plots[p.plot_id] = p
