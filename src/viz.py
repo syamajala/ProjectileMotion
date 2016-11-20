@@ -82,10 +82,9 @@ def monte_carlo_data(num):
     session['tof'] = tof
     vx, vy = p.vel(time)
 
-    p.make_plot(time, y, "Alt vs Time", "Time", "Alt")
-
     speed = list(map(np.linalg.norm, zip(vx, vy)))
     p.make_plot(time, speed, "Speed vs Time", "Time", "Speed")
+    p.make_plot(time, y, "Alt vs Time", "Time", "Alt")
 
     doc = czml.CZML()
     packet1 = czml.CZMLPacket(id='document', version='1.0')

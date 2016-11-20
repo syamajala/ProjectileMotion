@@ -25,7 +25,7 @@ var data = {
     }]
 };
 
-var svg  = d3.select("#messages").append("svg")
+var svg  = d3.select("#message-graph").append("svg")
 
 var graph = Graph()
 

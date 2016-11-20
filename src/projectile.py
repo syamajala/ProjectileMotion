@@ -1,7 +1,7 @@
 import numpy as np
-from bokeh.plotting import figure
-from bokeh.embed import components
+import plotly.graph_objs as go
 from bokeh import palettes
+from plotly.offline import plot
 from bs4 import BeautifulSoup
 
 
@@ -12,26 +12,30 @@ class Plot():
 
     def __init__(self, x, y, title, plot_id,
                  xaxis_label="", yaxis_label="", color=""):
-        self.plot = figure(title=title, plot_width=600, plot_height=400)
-        self.plot.line(x, y, line_color=color)
-        self.plot.xaxis.axis_label = xaxis_label
-        self.plot.yaxis.axis_label = yaxis_label
-
-        self.plot_id = "plot%d" % plot_id
-
-        script, div = components(self.plot)
-        self.script = script
-
-        soup = BeautifulSoup(div, 'lxml')
-        bk_root = soup.find('div', class_='bk-root')
-        bk_root['id'] = self.plot_id
-        bk_root['style'] = "display: none"
-
-        if self.plot_id == 'plot0':
-            bk_root['style'] = "display: block"
-        self.div = str(bk_root)
 
         self.title = title
+        self.plot_id = "plot%d" % plot_id
+
+        line = go.Scatter(x=x, y=y, line={'color': color})
+
+        layout = {'title': title,
+                  'xaxis': {'title': xaxis_label},
+                  'yaxis': {'title': yaxis_label}}
+
+        fig = {'data': [line], 'layout': layout}
+        div = plot(fig, output_type='div', include_plotlyjs=False)
+
+        soup = BeautifulSoup(div, 'lxml')
+        soup.html.unwrap()
+        soup.body.unwrap()
+        pdiv = soup.new_tag('div', id=self.plot_id)
+        pdiv['style'] = 'visibility: hidden;'
+
+        if self.plot_id == 'plot0':
+            pdiv['style'] = 'visibility: visible;'
+
+        pdiv.insert(1, soup)
+        self.div = str(pdiv)
 
 
 class Projectile():
@@ -89,17 +93,3 @@ class Projectile():
                  color=self.color)
         self.plot_id += 1
         self.plots[p.plot_id] = p
-
-
-def test():
-    p = Projectile(3000, 65)
-    tof = np.ceil(p.timeOfFlight())
-    time = np.arange(0, tof, 0.1)
-    x, y = p.pos(time)
-    z = np.zeros(time.size)
-    displacement = list(map(np.linalg.norm, zip(x, y, z)))
-    plot = figure(title="Displacement vs Time", plot_width=600, plot_height=400)
-    plot.line(time, displacement)
-    plot.xaxis.axis_label = 'Time'
-    plot.yaxis.axis_label = 'Displacement'
-    script, div = components(plot)

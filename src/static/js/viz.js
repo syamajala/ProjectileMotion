@@ -35,11 +35,9 @@ socket.on('connect', function() {
     if(reload)
     {
         location.reload()
-    } else
-    {
-        reload = true;
     }
 
+    reload = true;
     socket.emit('loadMessageData', window.location.pathname);
 })
 
@@ -79,10 +77,10 @@ socket.on('loadCesiumData', function(data) {
 
         viewer.zoomTo(ds);
     });
+
     viewer.clock.tick();
     viewer.clock.shouldAnimate = false;
 })
-
 
 
 socket.on('loadMessageData', function(mdata) {

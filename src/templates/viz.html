@@ -6,8 +6,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
 
         <title>Hello World!</title>
-        <link rel="stylesheet" type="text/css" href="/css/bokeh/bokeh-0.12.1.min.css">
-        <link rel="stylesheet" type="text/css" href="/css/bokeh/bokeh-widgets-0.12.1.min.css">
         <link rel="stylesheet" type="text/css" href="/css/columns.css">
         <script src="/js/cesiumjs/Build/Cesium/Cesium.js"></script>
         <style>
@@ -15,9 +13,8 @@
         </style>
         <script src="/js/socket.io-client/socket.io.js"></script>
         <script src="/js/d3js/d3.min.js"></script>
-        <script src="/js/bokeh/bokeh-0.12.1.min.js"></script>
-        <script src="/js/bokeh/bokeh-widgets-0.12.1.min.js"></script>
         <script src="/js/datgui/dat.gui.js"></script>
+        <script src="/js/plotly.js/dist/plotly.min.js"></script>
     </head>
     <body>
 
@@ -30,21 +27,21 @@
 
         <div class="column column-5">
 
-          <div class="row">
-            <select class="default" id="plot_select" name="plot">
-              {% for id, plot in plots.items() %}
-              <option value={{ id|e }} {% if id == "plot0" %} selected {% endif %}>
-                {{ plot.title|e }}
-              </option>
-              {% endfor %}
-            </select>
-            {% for id, plot in plots.items() %}
-            {{ plot.div|safe }}
-            {% endfor %}
+            <div class="row" id='plots'>
+                <select class="default" id="plot_select" name="plot">
+                    {% for id, plot in plots.items() %}
+                    <option value={{ id|e }} {% if id == "plot0" %} selected {% endif %}>
+                        {{ plot.title|e }}
+                    </option>
+                    {% endfor %}
+                </select>
+                {% for id, plot in plots.items() %}
+                {{ plot.div|safe }}
+                {% endfor %}
           </div>
 
           <div class="row" style="height: 40%; padding-top: 5px;">
-            <div id="messages"></div>
+            <div id="message-graph"></div>
           </div>
 
         </div>
@@ -53,9 +50,6 @@
         <script src="/js/messages.js"></script>
         <script src="/js/viz.js"></script>
         <script src="/js/plots.js"></script>
-        {% for id, plot in plots.items() %}
-        {{ plot.script|safe }}
-        {% endfor %}
 
 	</body>
 </html>

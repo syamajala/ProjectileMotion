@@ -4,3 +4,6 @@
 [submodule "src/static/js/socket.io-client"]
 	path = src/static/js/socket.io-client
 	url = https://github.com/socketio/socket.io-client.git
+[submodule "src/static/js/plotly.js"]
+	path = src/static/js/plotly.js
+	url = https://github.com/plotly/plotly.js.git
