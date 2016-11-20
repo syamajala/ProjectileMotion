@@ -28,7 +28,8 @@ class Plot():
         soup = BeautifulSoup(div, 'lxml')
         soup.html.unwrap()
         soup.body.unwrap()
-        pdiv = soup.new_tag('div', id=self.plot_id)
+        pdiv = soup.new_tag('div', id=self.plot_id, )
+        pdiv['class'] = 'plots'
         pdiv['style'] = 'visibility: hidden;'
 
         if self.plot_id == 'plot0':

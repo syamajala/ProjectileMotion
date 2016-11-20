@@ -27,7 +27,7 @@
 
         <div class="column column-5">
 
-            <div class="row" id='plots'>
+            <div class="row">
                 <select class="default" id="plot_select" name="plot">
                     {% for id, plot in plots.items() %}
                     <option value={{ id|e }} {% if id == "plot0" %} selected {% endif %}>
