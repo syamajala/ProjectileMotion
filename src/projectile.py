@@ -16,18 +16,20 @@ class Plot():
         self.title = title
         self.plot_id = "plot%d" % plot_id
 
-        layout = {'title': title,
-                  'xaxis': {'title': xaxis_label},
-                  'yaxis': {'title': yaxis_label}}
+        layout = go.Layout(title=title,
+                           xaxis={'title': xaxis_label},
+                           yaxis={'title': yaxis_label},
+                           margin={'l': 50, 'r': 0, 't': 25, 'b': 40},
+                           showlegend=True,
+                           legend={'x': 0.02, 'y': 1})
 
         if z is not None:
             line = go.Scatter3d(x=x, y=y, z=z, line={'color': color})
-            # layout['zaxis'] = {'title': zaxis_label}
         else:
             line = go.Scatter(x=x, y=y, line={'color': color})
 
         fig = {'data': [line], 'layout': layout}
-        div = plot(fig, output_type='div', include_plotlyjs=False)
+        div = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
 
         soup = BeautifulSoup(div, 'lxml')
         soup.html.unwrap()

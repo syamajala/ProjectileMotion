@@ -3,6 +3,9 @@ from flask import Flask, render_template, session
 from flask_socketio import SocketIO, emit
 from flask_session import Session
 from bokeh import palettes
+from plotly.offline import plot
+from plotly import tools
+import plotly.graph_objs as go
 import numpy as np
 import json
 import itertools
@@ -42,9 +45,36 @@ def serve_static(path):
 
 @app.route("/")
 def home():
-    runs = range(1, 101)
+    cols = 6
+    rows = 21
+
+    mcs = itertools.product(range(1, cols), range(1, rows))
+    mcs = itertools.starmap(lambda i, j: "<a href='/mc%d'>MC%d</a>" % ((rows-1)*i+j-(rows-1), (rows-1)*i+j-(rows-1)), mcs)
+
+    fig = tools.make_subplots(rows=rows-1, cols=cols-1, subplot_titles=list(mcs))
+
+    for i, j in itertools.product(range(1, cols), range(1, rows)):
+        n = (rows-1)*i+j-(rows-1)
+
+        x, y = np.random.rand(2, 10)*10
+        if (n % 2) == 0:
+            color = 'rgb(0, 150, 0)'
+        else:
+            color = 'rgb(150, 0, 0)'
+
+        plt = go.Scatter(x=x, y=y, fillcolor=color)
+        plt.marker.color = color
+        fig.append_trace(plt, j, i)
+
+        fig['layout']['xaxis%d' % n].update(title="Time", fixedrange=True)
+        fig['layout']['yaxis%d' % n].update(title="Position", fixedrange=True)
+
+    fig['layout'].update(title='Projectile Motion', height=4000, width=1800, showlegend=False)
+
+    plots = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
+
     return render_template('home.html',
-                           runs=runs)
+                           plots=plots)
 
 
 def point_pkt(pos):
