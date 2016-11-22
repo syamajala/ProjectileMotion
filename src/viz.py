@@ -10,8 +10,6 @@ import numpy as np
 import json
 import itertools
 import utils
-import datetime
-import dateutil.parser
 from modules.czml import czml
 from projectile import Projectile
 
@@ -20,21 +18,8 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 
-def build_start(start, seconds):
-    begin = dateutil.parser.parse(start)
-    delta = datetime.timedelta(seconds=seconds)
-    new_start = (begin + delta).isoformat()[:-6]
-
-    return new_start+'Z'
-
-
-def build_interval(start, seconds):
-    begin = dateutil.parser.parse(start)
-    delta = datetime.timedelta(seconds=seconds)
-    end = (begin + delta).isoformat()[:-6]
-
-    time = start+'/'+end+'Z'
-    return time
+def n(rows, i, j):
+    return (rows-1)*i+j-(rows-1)
 
 
 @app.route("/<path:path>")
@@ -49,38 +34,63 @@ def home():
     rows = 21
 
     mcs = itertools.product(range(1, cols), range(1, rows))
-    mcs = itertools.starmap(lambda i, j: "<a href='/mc%d'>MC%d</a>" % ((rows-1)*i+j-(rows-1), (rows-1)*i+j-(rows-1)), mcs)
+    mcs = itertools.starmap(lambda i, j: "<a href='/mc%d'>MC%d</a>" % (n(rows, i, j), n(rows, i, j)), mcs)
 
     fig = tools.make_subplots(rows=rows-1, cols=cols-1, subplot_titles=list(mcs))
 
+    tofs = []
+    xs = []
+    ys = []
+
     for i, j in itertools.product(range(1, cols), range(1, rows)):
-        n = (rows-1)*i+j-(rows-1)
+        idx = n(rows, i, j)
 
-        x, y = np.random.rand(2, 10)*10
-        if (n % 2) == 0:
-            color = 'rgb(0, 150, 0)'
-        else:
-            color = 'rgb(150, 0, 0)'
+        vel = np.random.uniform(1, 10000)
+        angle = np.random.uniform(1, 90)
+        p = Projectile(vel, angle)
+        session[idx] = p
 
-        plt = go.Scatter(x=x, y=y, fillcolor=color)
-        plt.marker.color = color
+        tof = np.ceil(p.timeOfFlight())
+        tofs.append(tof)
+        time = np.arange(0, tof)
+        x, y = p.pos(time)
+        xs.append(x)
+        ys.append(y)
+
+        plt = go.Scatter(x=time, y=y, mode='lines')
         fig.append_trace(plt, j, i)
 
-        fig['layout']['xaxis%d' % n].update(title="Time", fixedrange=True)
-        fig['layout']['yaxis%d' % n].update(title="Position", fixedrange=True)
+        height, time = p.height()
+        plt = go.Scatter(x=[time, time], y=[0, height], mode='lines', text='Maximum Height')
+        fig.append_trace(plt, j, i)
 
-    fig['layout'].update(title='Projectile Motion', height=4000, width=1800, showlegend=False)
+        fig['layout']['xaxis%d' % idx].update(title="Time", fixedrange=True)
+        fig['layout']['yaxis%d' % idx].update(title="Position", fixedrange=True)
+
+    fig['layout'].update(height=4000, width=1800, showlegend=False,
+                         hovermode="closest")
 
     plots = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
 
+    tof = max(tofs)
+    time = np.arange(tof)
+    pos = zip(xs, ys)
+    trajs = itertools.starmap(lambda idx, pos: go.Scatter3d(x=time, y=pos[0], z=pos[1], text='MC%d' % idx,
+                                                            mode='lines', showlegend=False),
+                              enumerate(pos))
+
+    fig = {'data': list(trajs), 'layout': go.Layout(title='Projectile Motion', height=500)}
+    trajs = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
+
     return render_template('home.html',
+                           trajs=trajs,
                            plots=plots)
 
 
 def point_pkt(pos):
     time, x, y, z, pid, color = pos
-    start = build_start("2000-01-01T11:58:55Z", time)
-    interval = build_interval(start, session['tof'])
+    start = utils.build_start("2000-01-01T11:58:55Z", time)
+    interval = utils.build_interval(start, session['tof'])
 
     glider_packet = czml.CZMLPacket(id="point" + str(pid),
                                     name="point" + str(pid),
@@ -102,7 +112,7 @@ def point_pkt(pos):
 @app.route("/mc<int:num>")
 def monte_carlo_data(num):
 
-    p = Projectile(4000, 45)
+    p = session[num]
     tof = np.ceil(p.timeOfFlight())
     time = np.arange(0, tof, 0.1)
     x, y = p.pos(time)
@@ -115,13 +125,13 @@ def monte_carlo_data(num):
     speed = list(map(np.linalg.norm, zip(vx, vy)))
     p.make_plot(time, speed, title="Speed vs Time", xaxis_label="Time", yaxis_label="Speed")
     p.make_plot(time, y, title="Alt vs Time", xaxis_label="Time", yaxis_label="Alt")
-    p.make_plot(time, x, y, "Trajectory", "Time", "X", "Y")
+    p.make_plot(time, x, y-(20925646.3255*.3048), "Trajectory", "Time", "X", "Y")
 
     doc = czml.CZML()
     packet1 = czml.CZMLPacket(id='document', version='1.0')
     doc.packets.append(packet1)
 
-    interval = build_interval("2000-01-01T11:58:55Z", tof)
+    interval = utils.build_interval("2000-01-01T11:58:55Z", tof)
 
     clock_packet = czml.CZMLPacket(id="document",
                                    name="CZML Path",

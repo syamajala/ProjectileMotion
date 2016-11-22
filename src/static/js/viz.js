@@ -1,7 +1,7 @@
 var viewer = new Cesium.Viewer('cesiumContainer', {
     // sceneModePicker : false,
     // vrButton: true,
-    fullscreenButton: true,
+    fullscreenButton: false,
     geocoder : false,
     baseLayerPicker : false,
     imageryProvider : Cesium.createTileMapServiceImageryProvider({
@@ -10,6 +10,7 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
         credit : 'Imagery courtesy Natual Earth'}),
 });
 
+viewer.clock.shouldAnimate = false;
 var scene = viewer.scene;
 
 scene.skyBox = new Cesium.SkyBox({
@@ -78,8 +79,7 @@ socket.on('loadCesiumData', function(data) {
         viewer.zoomTo(ds);
     });
 
-    viewer.clock.tick();
-    viewer.clock.shouldAnimate = false;
+    viewer.clock.shouldAnimate = true;
 })
 
 

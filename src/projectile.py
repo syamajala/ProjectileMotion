@@ -24,7 +24,7 @@ class Plot():
                            legend={'x': 0.02, 'y': 1})
 
         if z is not None:
-            line = go.Scatter3d(x=x, y=y, z=z, line={'color': color})
+            line = go.Scatter3d(x=x, y=y, z=z, line={'color': color}, mode='lines')
         else:
             line = go.Scatter(x=x, y=y, line={'color': color})
 
@@ -55,6 +55,7 @@ class Projectile():
         self.st = np.sin(theta)
         self.tof = None
         self.h = None
+        self.toh = None
 
         self.color = palettes.Set3_12[0]
 
@@ -90,8 +91,9 @@ class Projectile():
 
         if self.h is None:
             self.h = (self.v0**2*self.st**2)/(2*G)
+            self.toh = self.v0*self.st/G
 
-        return self.h
+        return (self.h, self.toh)
 
     def make_plot(self, x, y, z=None, title="", xaxis_label="", yaxis_label="", zaxis_label=""):
         p = Plot(x, y, z=z,
