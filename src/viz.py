@@ -18,8 +18,8 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 
-def n(rows, i, j):
-    return (rows-1)*i+j-(rows-1)
+def n(cols, i, j):
+    return (cols-1)*i+j
 
 
 @app.route("/<path:path>")
@@ -33,8 +33,8 @@ def home():
     cols = 6
     rows = 21
 
-    mcs = itertools.product(range(1, cols), range(1, rows))
-    mcs = itertools.starmap(lambda i, j: "<a href='/mc%d'>MC%d</a>" % (n(rows, i, j), n(rows, i, j)), mcs)
+    mcs = itertools.product(range(1, rows), range(1, cols))
+    mcs = itertools.starmap(lambda i, j: "<a href='/mc%d'>MC%d</a>" % (n(cols, i-1, j), n(cols, i-1, j)), mcs)
 
     fig = tools.make_subplots(rows=rows-1, cols=cols-1, subplot_titles=list(mcs))
 
@@ -42,9 +42,8 @@ def home():
     xs = []
     ys = []
 
-    for i, j in itertools.product(range(1, cols), range(1, rows)):
-        idx = n(rows, i, j)
-
+    for i, j in itertools.product(range(1, rows), range(1, cols)):
+        idx = n(cols, i-1, j)
         vel = np.random.uniform(1, 10000)
         angle = np.random.uniform(1, 90)
         p = Projectile(vel, angle)
@@ -57,12 +56,13 @@ def home():
         xs.append(x)
         ys.append(y)
 
-        plt = go.Scatter(x=time, y=y, mode='lines')
-        fig.append_trace(plt, j, i)
+        plt = go.Scatter(x=time, y=y, mode='markers', marker=dict(size=2.0))
+
+        fig.append_trace(plt, i, j)
 
         height, time = p.height()
         plt = go.Scatter(x=[time, time], y=[0, height], mode='lines', text='Maximum Height')
-        fig.append_trace(plt, j, i)
+        fig.append_trace(plt, i, j)
 
         fig['layout']['xaxis%d' % idx].update(title="Time", fixedrange=True)
         fig['layout']['yaxis%d' % idx].update(title="Position", fixedrange=True)
@@ -79,7 +79,9 @@ def home():
                                                             mode='lines', showlegend=False),
                               enumerate(pos))
 
-    fig = {'data': list(trajs), 'layout': go.Layout(title='Projectile Motion', height=500)}
+    fig = {'data': list(trajs),
+           'layout': go.Layout(title='Projectile Motion', height=600, width=1800,
+                               margin={'l': 0, 'r': 0, 't': 25, 'b': 0},)}
     trajs = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
 
     return render_template('home.html',
@@ -196,4 +198,4 @@ if __name__ == '__main__':
     sess = Session()
     sess.init_app(app)
 
-    socketio.run(app, host='0.0.0.0', port=8081, debug=True)
+    socketio.run(app, host='0.0.0.0', port=8081, debug=False)
