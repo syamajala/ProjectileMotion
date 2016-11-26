@@ -7,6 +7,8 @@
 
         <title>Hello World!</title>
         <link rel="stylesheet" type="text/css" href="/css/columns.css">
+        <link rel="stylesheet" type="text/css" href="/css/table.css">
+        <link rel="stylesheet" type="text/css" href="/css/graph.css">
         <script src="/js/cesiumjs/Build/Cesium/Cesium.js"></script>
         <style>
          @import url(/js/cesiumjs/Build/Cesium/Widgets/widgets.css);
@@ -27,7 +29,7 @@
 
         <div class="column column-5">
 
-            <div class="row">
+            <div class="row" style="height: 50%">
                 <select class="default" id="plot_select" name="plot">
                     {% for id, plot in plots.items() %}
                     <option value={{ id|e }} {% if id == "plot0" %} selected {% endif %}>
@@ -38,10 +40,36 @@
                 {% for id, plot in plots.items() %}
                 {{ plot.div|safe }}
                 {% endfor %}
-          </div>
+            </div>
 
-          <div class="row" style="height: 40%; padding-top: 5px;">
-              <div id="message-graph"></div>
+          <div class="row" style="height: 45%; margin-top:1em;">
+              <select class="default" id="message_data_select" name="messages">
+                  <option value="messageData0" selected>Table</option>
+                  <option value="messageData1">Graph</option>
+              </select>
+
+              <div id="messageData0" class="tableContainer" style="visibility: visible; height: 98%">
+                  <table class="scrollTable">
+                      <thead class="fixedHeader">
+                          <tr>
+                              <th>Time</th>
+                              <th>Event</th>
+                              <th>Fields</th>
+                          </tr>
+                      </thead>
+                      <tbody class="scrollContent">
+                          {% for msg in timeline %}
+                          <tr>
+                              <td>{{ msg.time }}</td>
+                              <td>{{ msg.event }}</td>
+                              <td>{{ msg.fields }}</td>
+                          </tr>
+                          {% endfor %}
+                      </tbody>
+              </table>
+              </div>
+
+              <div id="messageData1" class="graph" style="visibility: hidden;"></div>
           </div>
 
         </div>

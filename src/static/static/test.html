@@ -2,7 +2,7 @@
   <head>
     <style>
       svg {
-      height: 100%;
+      height: 95%;
       width: 100%;
       }
 
@@ -27,13 +27,49 @@
       font: 10px sans-serif;
       }
     </style>
+    <link rel="stylesheet" type="text/css" href="/css/columns.css">
+    <link rel="stylesheet" type="text/css" href="/css/table.css">
     <script type="text/javascript" src="/js/d3js/d3.js"></script>
   </head>
   <body>
-    <div id="messages">
-      <button onclick="sendMessage(svg, graph, msgData)">Animate</button>
-    </div>
-    <script type="text/javascript" src="/js/graph.js"></script>
-    <script type="text/javascript" src="/js/messages.js"></script>
+      <div class="column column-7">
+          <div class="row" style="height: 100%">
+              Cesium
+          </div>
+      </div>
+
+      <div class="column column-5">
+          <div class="row" style="height: 50%">
+              Plots
+          </div>
+
+          <div class="row" style="height: 45%">
+              <select class="default" id="message_data_select" name="messages">
+                  <option value="messageData0" selected>Table</option>
+                  <option value="messageData1">Graph</option>
+              </select>
+              <div id="messageData0" class="tableContainer" style="visibility: visible; height:100%">
+                  <table class="scrollTable">
+                      <thead class="fixedHeader">
+                          <tr>
+                              <th>Time</th>
+                              <th>Event</th>
+                          </tr>
+                      </thead>
+                      <tbody class="scrollContent">
+                          <tr><td>1.0</td><td>Hi</td></tr>
+                          <tr><td>2.0</td><td>Hi</td></tr>
+                          <tr><td>3.0</td><td>Hi</td></tr>
+                          <tr><td>4.0</td><td>Hi</td></tr>
+                      </tbody>
+                  </table>
+              </div>
+
+              <div id="messageData1">
+                  <button onclick="sendMessage(svg, graph, msgData, 1)">Animate</button>
+              </div>
+      </div>
+      <script type="text/javascript" src="/js/graph.js"></script>
+      <script type="text/javascript" src="/js/messages.js"></script>
   </body>
 </html>

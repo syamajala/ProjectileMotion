@@ -30,60 +30,6 @@ def serve_static(path):
 
 @app.route("/")
 def home():
-    cols = 6
-    rows = 21
-
-    mcs = itertools.product(range(1, rows), range(1, cols))
-    mcs = itertools.starmap(lambda i, j: "<a href='/mc%d'>MC%d</a>" % (n(cols, i-1, j), n(cols, i-1, j)), mcs)
-
-    fig = tools.make_subplots(rows=rows-1, cols=cols-1, subplot_titles=list(mcs))
-
-    tofs = []
-    xs = []
-    ys = []
-
-    for i, j in itertools.product(range(1, rows), range(1, cols)):
-        idx = n(cols, i-1, j)
-        vel = np.random.uniform(1, 10000)
-        angle = np.random.uniform(1, 90)
-        p = Projectile(vel, angle)
-        session[idx] = p
-
-        tof = np.ceil(p.timeOfFlight())
-        tofs.append(tof)
-        time = np.arange(0, tof)
-        x, y = p.pos(time)
-        xs.append(x)
-        ys.append(y)
-
-        plt = go.Scatter(x=time, y=y, mode='markers', marker=dict(size=2.0))
-
-        fig.append_trace(plt, i, j)
-
-        height, time = p.height()
-        plt = go.Scatter(x=[time, time], y=[0, height], mode='lines', text='Maximum Height')
-        fig.append_trace(plt, i, j)
-
-        fig['layout']['xaxis%d' % idx].update(title="Time", fixedrange=True)
-        fig['layout']['yaxis%d' % idx].update(title="Position", fixedrange=True)
-
-    fig['layout'].update(height=4000, width=1800, showlegend=False,
-                         hovermode="closest")
-
-    plots = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
-
-    tof = max(tofs)
-    time = np.arange(tof)
-    pos = zip(xs, ys)
-    trajs = itertools.starmap(lambda idx, pos: go.Scatter3d(x=time, y=pos[0], z=pos[1], text='MC%d' % idx,
-                                                            mode='lines', showlegend=False),
-                              enumerate(pos))
-
-    fig = {'data': list(trajs),
-           'layout': go.Layout(title='Projectile Motion', height=600, width=1800,
-                               margin={'l': 0, 'r': 0, 't': 25, 'b': 0},)}
-    trajs = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
-
     return render_template('home.html',
                            trajs=trajs,
                            plots=plots)
@@ -114,7 +60,7 @@ def point_pkt(pos):
 @app.route("/mc<int:num>")
 def monte_carlo_data(num):
 
-    p = session[num]
+    p = models[num]
     tof = np.ceil(p.timeOfFlight())
     time = np.arange(0, tof, 0.1)
     x, y = p.pos(time)
@@ -173,8 +119,18 @@ def monte_carlo_data(num):
 
     session['doc'] = doc
 
+    class Msg():
+
+        def __init__(self, time, event, fields):
+            self.time = time
+            self.event = event
+            self.fields = fields
+
+    timeline = itertools.starmap(Msg, zip(range(1, 101), ['ABC']*100,
+                                          ['A really long string that you need to scroll for.']*100))
     return render_template('viz.html',
-                           plots=p.plots)
+                           plots=p.plots,
+                           timeline=timeline)
 
 
 @socketio.on('loadCesiumData')
@@ -197,5 +153,60 @@ if __name__ == '__main__':
     app.config['SECRET_KEY'] = 'mysecretkey1'
     sess = Session()
     sess.init_app(app)
+
+    cols = 6
+    rows = 21
+
+    mcs = itertools.product(range(1, rows), range(1, cols))
+    mcs = itertools.starmap(lambda i, j: "<a href='/mc%d'>MC%d</a>" % (n(cols, i-1, j), n(cols, i-1, j)), mcs)
+
+    fig = tools.make_subplots(rows=rows-1, cols=cols-1, subplot_titles=list(mcs), print_grid=False)
+
+    tofs = []
+    xs = []
+    ys = []
+    models = {}
+
+    for i, j in itertools.product(range(1, rows), range(1, cols)):
+        idx = n(cols, i-1, j)
+        vel = np.random.uniform(1, 10000)
+        angle = np.random.uniform(1, 90)
+        p = Projectile(vel, angle)
+        models[idx] = p
+
+        tof = np.ceil(p.timeOfFlight())
+        tofs.append(tof)
+        time = np.arange(0, tof)
+        x, y = p.pos(time)
+        xs.append(x)
+        ys.append(y)
+
+        plt = go.Scatter(x=time, y=y, mode='markers', marker=dict(size=2.0))
+
+        fig.append_trace(plt, i, j)
+
+        height, time = p.height()
+        plt = go.Scatter(x=[time, time], y=[0, height], mode='lines', text='Maximum Height')
+        fig.append_trace(plt, i, j)
+
+        fig['layout']['xaxis%d' % idx].update(title="Time", fixedrange=True)
+        fig['layout']['yaxis%d' % idx].update(title="Position", fixedrange=True)
+
+    fig['layout'].update(height=4000, width=1800, showlegend=False,
+                         hovermode="closest")
+
+    plots = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
+
+    tof = max(tofs)
+    time = np.arange(tof)
+    pos = zip(xs, ys)
+    trajs = itertools.starmap(lambda idx, pos: go.Scatter3d(x=time, y=pos[0], z=pos[1], text='MC%d' % idx,
+                                                            mode='lines', showlegend=False),
+                              enumerate(pos))
+
+    fig = {'data': list(trajs),
+           'layout': go.Layout(title='Projectile Motion', height=600, width=1800,
+                               margin={'l': 0, 'r': 0, 't': 25, 'b': 0},)}
+    trajs = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
 
     socketio.run(app, host='0.0.0.0', port=8081, debug=False)

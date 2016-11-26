@@ -25,7 +25,7 @@ var data = {
     }]
 };
 
-var svg  = d3.select("#message-graph").append("svg")
+var svg  = d3.select("#messageData1").append("svg")
 
 var graph = Graph()
 
@@ -63,3 +63,21 @@ var labels = svg.selectAll(".label")
     .attr("x", function(d) { return d.x-13; })
     .attr("y", function(d) { return d.y+5; })
     .text(function(d) { return d.name; });
+
+var messageElem = document.getElementById("message_data_select")
+var messageLastDiv = document.getElementById("messageData0")
+
+document.getElementById('messageData1').style.display = "none"
+
+messageElem.onchange = function() {
+
+    var hiddenDiv = document.getElementById(messageElem.options[messageElem.selectedIndex].value);
+
+    hiddenDiv.style.visibility = (this.value == "") ? "hidden":"visible";
+    messageLastDiv.style.visibility = "hidden";
+
+    hiddenDiv.style.display = (this.value == "") ? "none":"block";
+    messageLastDiv.style.display = "none";
+
+    messageLastDiv = hiddenDiv
+}
