@@ -190,7 +190,7 @@ if __name__ == '__main__':
         fig.append_trace(plt, i, j)
 
         fig['layout']['xaxis%d' % idx].update(title="Time", fixedrange=True)
-        fig['layout']['yaxis%d' % idx].update(title="Position", fixedrange=True)
+        fig['layout']['yaxis%d' % idx].update(title="Altitude", fixedrange=True)
 
     fig['layout'].update(height=4000, width=1800, showlegend=False,
                          hovermode="closest")
