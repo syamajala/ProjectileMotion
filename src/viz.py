@@ -2,11 +2,11 @@
 from flask import Flask, render_template, session
 from flask_socketio import SocketIO, emit
 from flask_session import Session
-from bokeh import palettes
 from plotly.offline import plot
 from plotly import tools
 import plotly.graph_objs as go
 import numpy as np
+import colorlover as cl
 import json
 import itertools
 import utils
@@ -88,7 +88,7 @@ def monte_carlo_data(num):
                                           "currentTime:": "2000-01-01T11:58:50Z",
                                           "multiplier": 1,
                                           "range": "CLAMPED"})
-    color = utils.hex2rgb(p.color)
+    color = utils.rgb2rgba(p.color)
     pos = zip(time, x, y, z, range(0, len(x)), [color]*len(x))
     pkts = list(map(point_pkt, pos))
 
@@ -100,7 +100,7 @@ def monte_carlo_data(num):
                                     name="Path",
                                     availability=interval)
 
-    color_pack = czml.Color(rgba=utils.hex2rgb(palettes.Set3_12[3]))
+    color_pack = czml.Color(rgba=utils.rgb2rgba(cl.scales['12']['qual']['Set3'][3]))
     polylineOutline_pack = czml.PolylineOutline(color=color_pack)
     material_pack = czml.Material(polylineOutline=polylineOutline_pack)
     path_pack = czml.Path(material=material_pack,

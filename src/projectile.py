@@ -1,6 +1,7 @@
 import numpy as np
+import colorlover as cl
 import plotly.graph_objs as go
-from bokeh import palettes
+import utils
 from plotly.offline import plot
 from bs4 import BeautifulSoup
 
@@ -57,7 +58,7 @@ class Projectile():
         self.h = None
         self.toh = None
 
-        self.color = palettes.Set3_12[0]
+        self.color = cl.scales['12']['qual']['Set3'][0]
 
         self.plot_id = 0
         self.plots = {}
