@@ -1,4 +1,3 @@
-import struct
 import pyproj
 import datetime
 import dateutil.parser
@@ -8,9 +7,9 @@ ecef = pyproj.Proj(proj='geocent', ellps='WGS84', datum='WGS84')
 lla = pyproj.Proj(proj='latlong', ellps='WGS84', datum='WGS84')
 
 
-def hex2rgb(hexstr, alpha=255):
-    # return struct.unpack('BBB', hexstr[1:].decode('hex'))
-    return struct.unpack('BBB', bytes.fromhex(hexstr[1:])) + (alpha, )
+def rgb2rgba(rgb, alpha=255):
+    c = map(int, rgb[4:-1].split(','))
+    return tuple(c) + (alpha, )
 
 
 def ecef2lla(x, y, z):
