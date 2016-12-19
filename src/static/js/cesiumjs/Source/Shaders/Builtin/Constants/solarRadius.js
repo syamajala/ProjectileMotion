@@ -14,5 +14,6 @@ define(function() {
  * // GLSL declaration\n\
  * const float czm_solarRadius = ...;\n\
  */\n\
-const float czm_solarRadius = 695500000.0;";
+const float czm_solarRadius = 695500000.0;\n\
+";
 });

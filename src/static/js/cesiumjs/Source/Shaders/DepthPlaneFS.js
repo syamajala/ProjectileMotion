@@ -21,5 +21,6 @@ void main()\n\
     {\n\
         discard;\n\
     }\n\
-}";
+}\n\
+";
 });

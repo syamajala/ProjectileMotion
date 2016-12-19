@@ -8,5 +8,6 @@ define(function() {
  * @name czm_epsilon7\n\
  * @glslConstant\n\
  */\n\
-const float czm_epsilon7 = 0.0000001;";
+const float czm_epsilon7 = 0.0000001;\n\
+";
 });

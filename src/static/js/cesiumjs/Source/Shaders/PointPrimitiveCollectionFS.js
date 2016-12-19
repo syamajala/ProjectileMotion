@@ -32,5 +32,6 @@ void main()\n\
 #else\n\
     gl_FragColor = color;\n\
 #endif\n\
-}";
+}\n\
+";
 });

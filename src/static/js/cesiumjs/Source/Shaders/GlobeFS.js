@@ -9,6 +9,7 @@ uniform vec4 u_initialColor;\n\
 #if TEXTURE_UNITS > 0\n\
 uniform sampler2D u_dayTextures[TEXTURE_UNITS];\n\
 uniform vec4 u_dayTextureTranslationAndScale[TEXTURE_UNITS];\n\
+uniform bool u_dayTextureUseWebMercatorT[TEXTURE_UNITS];\n\
 \n\
 #ifdef APPLY_ALPHA\n\
 uniform float u_dayTextureAlpha[TEXTURE_UNITS];\n\
@@ -53,7 +54,7 @@ uniform vec2 u_lightingFadeDistance;\n\
 \n\
 varying vec3 v_positionMC;\n\
 varying vec3 v_positionEC;\n\
-varying vec2 v_textureCoordinates;\n\
+varying vec3 v_textureCoordinates;\n\
 varying vec3 v_normalMC;\n\
 varying vec3 v_normalEC;\n\
 \n\
@@ -83,19 +84,19 @@ vec4 sampleAndBlend(\n\
     //    tileTextureCoordinates.t > textureCoordinateRectangle.q\n\
     // In other words, the alpha is zero if the fragment is outside the rectangle\n\
     // covered by this texture.  Would an actual 'if' yield better performance?\n\
-    vec2 alphaMultiplier = step(textureCoordinateRectangle.st, tileTextureCoordinates); \n\
+    vec2 alphaMultiplier = step(textureCoordinateRectangle.st, tileTextureCoordinates);\n\
     textureAlpha = textureAlpha * alphaMultiplier.x * alphaMultiplier.y;\n\
-    \n\
+\n\
     alphaMultiplier = step(vec2(0.0), textureCoordinateRectangle.pq - tileTextureCoordinates);\n\
     textureAlpha = textureAlpha * alphaMultiplier.x * alphaMultiplier.y;\n\
-    \n\
+\n\
     vec2 translation = textureCoordinateTranslationAndScale.xy;\n\
     vec2 scale = textureCoordinateTranslationAndScale.zw;\n\
     vec2 textureCoordinates = tileTextureCoordinates * scale + translation;\n\
     vec4 value = texture2D(texture, textureCoordinates);\n\
     vec3 color = value.rgb;\n\
     float alpha = value.a;\n\
-    \n\
+\n\
 #ifdef APPLY_BRIGHTNESS\n\
     color = mix(vec3(0.0), color, textureBrightness);\n\
 #endif\n\
@@ -122,7 +123,7 @@ vec4 sampleAndBlend(\n\
     return vec4(outColor, outAlpha);\n\
 }\n\
 \n\
-vec4 computeDayColor(vec4 initialColor, vec2 textureCoordinates);\n\
+vec4 computeDayColor(vec4 initialColor, vec3 textureCoordinates);\n\
 vec4 computeWaterColor(vec3 positionEyeCoordinates, vec2 textureCoordinates, mat3 enuToEye, vec4 imageryColor, float specularMapValue);\n\
 \n\
 void main()\n\
@@ -149,14 +150,14 @@ void main()\n\
 #ifdef SHOW_REFLECTIVE_OCEAN\n\
     vec2 waterMaskTranslation = u_waterMaskTranslationAndScale.xy;\n\
     vec2 waterMaskScale = u_waterMaskTranslationAndScale.zw;\n\
-    vec2 waterMaskTextureCoordinates = v_textureCoordinates * waterMaskScale + waterMaskTranslation;\n\
+    vec2 waterMaskTextureCoordinates = v_textureCoordinates.xy * waterMaskScale + waterMaskTranslation;\n\
 \n\
     float mask = texture2D(u_waterMask, waterMaskTextureCoordinates).r;\n\
 \n\
     if (mask > 0.0)\n\
     {\n\
         mat3 enuToEye = czm_eastNorthUpToEyeCoordinates(v_positionMC, normalEC);\n\
-        \n\
+\n\
         vec2 ellipsoidTextureCoordinates = czm_ellipsoidWgs84TextureCoordinates(normalMC);\n\
         vec2 ellipsoidFlippedTextureCoordinates = czm_ellipsoidWgs84TextureCoordinates(normalMC.zyx);\n\
 \n\
@@ -186,7 +187,7 @@ void main()\n\
     const float fExposure = 2.0;\n\
     vec3 fogColor = v_mieColor + finalColor.rgb * v_rayleighColor;\n\
     fogColor = vec3(1.0) - exp(-fExposure * fogColor);\n\
-    \n\
+\n\
     gl_FragColor = vec4(czm_fog(v_distance, finalColor.rgb, fogColor), finalColor.a);\n\
 #else\n\
     gl_FragColor = finalColor;\n\
@@ -214,7 +215,7 @@ const float oceanFrequencyLowAltitude = 825000.0;\n\
 const float oceanAnimationSpeedLowAltitude = 0.004;\n\
 const float oceanOneOverAmplitudeLowAltitude = 1.0 / 2.0;\n\
 const float oceanSpecularIntensity = 0.5;\n\
- \n\
+\n\
 // high altitude wave settings\n\
 const float oceanFrequencyHighAltitude = 125000.0;\n\
 const float oceanAnimationSpeedHighAltitude = 0.008;\n\
@@ -227,7 +228,7 @@ vec4 computeWaterColor(vec3 positionEyeCoordinates, vec2 textureCoordinates, mat
 \n\
     // The double normalize below works around a bug in Firefox on Android devices.\n\
     vec3 normalizedpositionToEyeEC = normalize(normalize(positionToEyeEC));\n\
-    \n\
+\n\
     // Fade out the waves as the camera moves far from the surface.\n\
     float waveIntensity = waveFade(70000.0, 1000000.0, positionToEyeECLength);\n\
 \n\
@@ -236,20 +237,20 @@ vec4 computeWaterColor(vec3 positionEyeCoordinates, vec2 textureCoordinates, mat
     float time = czm_frameNumber * oceanAnimationSpeedHighAltitude;\n\
     vec4 noise = czm_getWaterNoise(u_oceanNormalMap, textureCoordinates * oceanFrequencyHighAltitude, time, 0.0);\n\
     vec3 normalTangentSpaceHighAltitude = vec3(noise.xy, noise.z * oceanOneOverAmplitudeHighAltitude);\n\
-    \n\
+\n\
     // low altitude waves\n\
     time = czm_frameNumber * oceanAnimationSpeedLowAltitude;\n\
     noise = czm_getWaterNoise(u_oceanNormalMap, textureCoordinates * oceanFrequencyLowAltitude, time, 0.0);\n\
     vec3 normalTangentSpaceLowAltitude = vec3(noise.xy, noise.z * oceanOneOverAmplitudeLowAltitude);\n\
-    \n\
+\n\
     // blend the 2 wave layers based on distance to surface\n\
     float highAltitudeFade = linearFade(0.0, 60000.0, positionToEyeECLength);\n\
     float lowAltitudeFade = 1.0 - linearFade(20000.0, 60000.0, positionToEyeECLength);\n\
-    vec3 normalTangentSpace = \n\
-        (highAltitudeFade * normalTangentSpaceHighAltitude) + \n\
+    vec3 normalTangentSpace =\n\
+        (highAltitudeFade * normalTangentSpaceHighAltitude) +\n\
         (lowAltitudeFade * normalTangentSpaceLowAltitude);\n\
     normalTangentSpace = normalize(normalTangentSpace);\n\
-    \n\
+\n\
     // fade out the normal perturbation as we move farther from the water surface\n\
     normalTangentSpace.xy *= waveIntensity;\n\
     normalTangentSpace = normalize(normalTangentSpace);\n\
@@ -258,13 +259,13 @@ vec4 computeWaterColor(vec3 positionEyeCoordinates, vec2 textureCoordinates, mat
 #endif\n\
 \n\
     vec3 normalEC = enuToEye * normalTangentSpace;\n\
-    \n\
+\n\
     const vec3 waveHighlightColor = vec3(0.3, 0.45, 0.6);\n\
-    \n\
+\n\
     // Use diffuse light to highlight the waves\n\
     float diffuseIntensity = czm_getLambertDiffuse(czm_sunDirectionEC, normalEC) * maskValue;\n\
     vec3 diffuseHighlight = waveHighlightColor * diffuseIntensity;\n\
-    \n\
+\n\
 #ifdef SHOW_OCEAN_WAVES\n\
     // Where diffuse light is low or non-existent, use wave highlights based solely on\n\
     // the wave bumpiness and no particular light direction.\n\
@@ -278,8 +279,8 @@ vec4 computeWaterColor(vec3 positionEyeCoordinates, vec2 textureCoordinates, mat
     float specularIntensity = czm_getSpecular(czm_sunDirectionEC, normalizedpositionToEyeEC, normalEC, 10.0) + 0.25 * czm_getSpecular(czm_moonDirectionEC, normalizedpositionToEyeEC, normalEC, 10.0);\n\
     float surfaceReflectance = mix(0.0, mix(u_zoomedOutOceanSpecularIntensity, oceanSpecularIntensity, waveIntensity), maskValue);\n\
     float specular = specularIntensity * surfaceReflectance;\n\
-    \n\
-    return vec4(imageryColor.rgb + diffuseHighlight + nonDiffuseHighlight + specular, imageryColor.a); \n\
+\n\
+    return vec4(imageryColor.rgb + diffuseHighlight + nonDiffuseHighlight + specular, imageryColor.a);\n\
 }\n\
 \n\
 #endif // #ifdef SHOW_REFLECTIVE_OCEAN\n\

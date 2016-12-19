@@ -10,5 +10,6 @@ struct czm_depthRangeStruct\n\
 {\n\
     float near;\n\
     float far;\n\
-};";
+};\n\
+";
 });

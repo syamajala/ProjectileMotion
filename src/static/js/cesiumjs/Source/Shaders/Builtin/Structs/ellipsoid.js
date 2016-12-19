@@ -13,5 +13,6 @@ struct czm_ellipsoid\n\
     vec3 radii;\n\
     vec3 inverseRadii;\n\
     vec3 inverseRadiiSquared;\n\
-};";
+};\n\
+";
 });

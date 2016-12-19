@@ -9,5 +9,6 @@ vec4 czm_cascadeColor(vec4 weights)\n\
            vec4(0.0, 1.0, 0.0, 1.0) * weights.y +\n\
            vec4(0.0, 0.0, 1.0, 1.0) * weights.z +\n\
            vec4(1.0, 0.0, 1.0, 1.0) * weights.w;\n\
-}";
+}\n\
+";
 });

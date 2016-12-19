@@ -30,5 +30,6 @@ vec3 czm_signNotZero(vec3 value)\n\
 vec4 czm_signNotZero(vec4 value)\n\
 {\n\
     return vec4(czm_signNotZero(value.x), czm_signNotZero(value.y), czm_signNotZero(value.z), czm_signNotZero(value.w));\n\
-}";
+}\n\
+";
 });

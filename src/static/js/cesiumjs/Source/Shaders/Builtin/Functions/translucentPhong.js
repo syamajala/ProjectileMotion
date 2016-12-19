@@ -30,5 +30,6 @@ vec4 czm_translucentPhong(vec3 toEye, czm_material material)\n\
     color += material.specular * specular;\n\
 \n\
     return vec4(color, material.alpha);\n\
-}";
+}\n\
+";
 });

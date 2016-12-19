@@ -17,5 +17,6 @@ define(function() {
  * // Example\n\
  * float pi = 6.0 * czm_piOverSix;\n\
  */\n\
-const float czm_piOverSix = 0.5235987755982988;";
+const float czm_piOverSix = 0.5235987755982988;\n\
+";
 });

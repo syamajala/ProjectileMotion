@@ -12,5 +12,6 @@ define(function() {
  * @see czm_sceneMode3D\n\
  * @see czm_sceneModeMorphing\n\
  */\n\
-const float czm_sceneModeColumbusView = 1.0;";
+const float czm_sceneModeColumbusView = 1.0;\n\
+";
 });

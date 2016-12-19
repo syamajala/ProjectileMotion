@@ -17,5 +17,6 @@ void main(void)\n\
 {\n\
     gl_FragColor = v_color;\n\
     writeDepthClampedToFarPlane();\n\
-}";
+}\n\
+";
 });

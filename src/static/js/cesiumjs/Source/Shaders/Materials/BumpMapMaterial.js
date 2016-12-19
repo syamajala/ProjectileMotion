@@ -30,5 +30,6 @@ czm_material czm_getMaterial(czm_materialInput materialInput)\n\
     material.diffuse = vec3(0.01);\n\
     \n\
     return material;\n\
-}";
+}\n\
+";
 });

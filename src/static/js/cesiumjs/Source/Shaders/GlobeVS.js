@@ -3,10 +3,11 @@
 define(function() {
     'use strict';
     return "#ifdef QUANTIZATION_BITS12\n\
-attribute vec4 compressed;\n\
+attribute vec4 compressed0;\n\
+attribute float compressed1;\n\
 #else\n\
 attribute vec4 position3DAndHeight;\n\
-attribute vec3 textureCoordAndEncodedNormals;\n\
+attribute vec4 textureCoordAndEncodedNormals;\n\
 #endif\n\
 \n\
 uniform vec3 u_center3D;\n\
@@ -21,7 +22,7 @@ uniform vec2 u_southMercatorYAndOneOverHeight;\n\
 varying vec3 v_positionMC;\n\
 varying vec3 v_positionEC;\n\
 \n\
-varying vec2 v_textureCoordinates;\n\
+varying vec3 v_textureCoordinates;\n\
 varying vec3 v_normalMC;\n\
 varying vec3 v_normalEC;\n\
 \n\
@@ -59,7 +60,7 @@ float get2DMercatorYPositionFraction(vec2 textureCoordinates)\n\
         float currentLatitude = mix(southLatitude, northLatitude, textureCoordinates.y);\n\
         currentLatitude = clamp(currentLatitude, -czm_webMercatorMaxLatitude, czm_webMercatorMaxLatitude);\n\
         positionFraction = czm_latitudeToWebMercatorFraction(currentLatitude, southMercatorY, oneOverMercatorHeight);\n\
-    }    \n\
+    }\n\
     return positionFraction;\n\
 }\n\
 \n\
@@ -101,29 +102,58 @@ uniform vec2 u_minMaxHeight;\n\
 uniform mat4 u_scaleAndBias;\n\
 #endif\n\
 \n\
-void main() \n\
+void main()\n\
 {\n\
 #ifdef QUANTIZATION_BITS12\n\
-    vec2 xy = czm_decompressTextureCoordinates(compressed.x);\n\
-    vec2 zh = czm_decompressTextureCoordinates(compressed.y);\n\
+    vec2 xy = czm_decompressTextureCoordinates(compressed0.x);\n\
+    vec2 zh = czm_decompressTextureCoordinates(compressed0.y);\n\
     vec3 position = vec3(xy, zh.x);\n\
     float height = zh.y;\n\
-    vec2 textureCoordinates = czm_decompressTextureCoordinates(compressed.z);\n\
-    float encodedNormal = compressed.w;\n\
+    vec2 textureCoordinates = czm_decompressTextureCoordinates(compressed0.z);\n\
 \n\
     height = height * (u_minMaxHeight.y - u_minMaxHeight.x) + u_minMaxHeight.x;\n\
     position = (u_scaleAndBias * vec4(position, 1.0)).xyz;\n\
+\n\
+#if (defined(ENABLE_VERTEX_LIGHTING) || defined(GENERATE_POSITION_AND_NORMAL)) && defined(INCLUDE_WEB_MERCATOR_Y)\n\
+    float webMercatorT = czm_decompressTextureCoordinates(compressed0.w).x;\n\
+    float encodedNormal = compressed1;\n\
+#elif defined(INCLUDE_WEB_MERCATOR_Y)\n\
+    float webMercatorT = czm_decompressTextureCoordinates(compressed0.w).x;\n\
+    float encodedNormal = 0.0;\n\
+#elif defined(ENABLE_VERTEX_LIGHTING) || defined(GENERATE_POSITION_AND_NORMAL)\n\
+    float webMercatorT = textureCoordinates.y;\n\
+    float encodedNormal = compressed0.w;\n\
 #else\n\
+    float webMercatorT = textureCoordinates.y;\n\
+    float encodedNormal = 0.0;\n\
+#endif\n\
+\n\
+#else\n\
+    // A single float per element\n\
     vec3 position = position3DAndHeight.xyz;\n\
     float height = position3DAndHeight.w;\n\
     vec2 textureCoordinates = textureCoordAndEncodedNormals.xy;\n\
+\n\
+#if (defined(ENABLE_VERTEX_LIGHTING) || defined(GENERATE_POSITION_AND_NORMAL)) && defined(INCLUDE_WEB_MERCATOR_Y)\n\
+    float webMercatorT = textureCoordAndEncodedNormals.z;\n\
+    float encodedNormal = textureCoordAndEncodedNormals.w;\n\
+#elif defined(ENABLE_VERTEX_LIGHTING) || defined(GENERATE_POSITION_AND_NORMAL)\n\
+    float webMercatorT = textureCoordinates.y;\n\
     float encodedNormal = textureCoordAndEncodedNormals.z;\n\
+#elif defined(INCLUDE_WEB_MERCATOR_Y)\n\
+    float webMercatorT = textureCoordAndEncodedNormals.z;\n\
+    float encodedNormal = 0.0;\n\
+#else\n\
+    float webMercatorT = textureCoordinates.y;\n\
+    float encodedNormal = 0.0;\n\
+#endif\n\
+\n\
 #endif\n\
 \n\
     vec3 position3DWC = position + u_center3D;\n\
     gl_Position = getPosition(position, height, textureCoordinates);\n\
 \n\
-    v_textureCoordinates = textureCoordinates;\n\
+    v_textureCoordinates = vec3(textureCoordinates, webMercatorT);\n\
 \n\
 #if defined(ENABLE_VERTEX_LIGHTING) || defined(GENERATE_POSITION_AND_NORMAL)\n\
     v_positionEC = (u_modifiedModelView * vec4(position, 1.0)).xyz;\n\
@@ -134,12 +164,13 @@ void main() \n\
     v_positionEC = (u_modifiedModelView * vec4(position, 1.0)).xyz;\n\
     v_positionMC = position3DWC;                                 // position in model coordinates\n\
 #endif\n\
-    \n\
+\n\
 #ifdef FOG\n\
     AtmosphereColor atmosColor = computeGroundAtmosphereFromSpace(position3DWC);\n\
     v_mieColor = atmosColor.mie;\n\
     v_rayleighColor = atmosColor.rayleigh;\n\
     v_distance = length((czm_modelView3D * vec4(position3DWC, 1.0)).xyz);\n\
 #endif\n\
-}";
+}\n\
+";
 });

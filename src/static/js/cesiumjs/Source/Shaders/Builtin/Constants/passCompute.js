@@ -10,5 +10,6 @@ define(function() {
  *\n\
  * @see czm_pass\n\
  */\n\
-const float czm_passCompute = 1.0;";
+const float czm_passCompute = 1.0;\n\
+";
 });

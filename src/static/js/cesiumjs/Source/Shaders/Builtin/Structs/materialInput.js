@@ -23,5 +23,6 @@ struct czm_materialInput\n\
     vec3 normalEC;\n\
     mat3 tangentToEyeMatrix;\n\
     vec3 positionToEyeEC;\n\
-};";
+};\n\
+";
 });

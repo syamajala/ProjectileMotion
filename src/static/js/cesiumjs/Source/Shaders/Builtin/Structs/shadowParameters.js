@@ -16,5 +16,6 @@ define(function() {
     vec2 texelStepSize;\n\
     float normalShadingSmooth;\n\
     float darkness;\n\
-};";
+};\n\
+";
 });

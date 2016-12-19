@@ -212,5 +212,6 @@ vec2 czm_cosineAndSine(float angle)\n\
     {\n\
         return cordic(angle);\n\
     }\n\
-}";
+}\n\
+";
 });

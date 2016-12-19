@@ -17,5 +17,6 @@ void main()\n\
     czm_material material = czm_getMaterial(materialInput);\n\
 \n\
     gl_FragColor = vec4(material.diffuse + material.emission, material.alpha);\n\
-}";
+}\n\
+";
 });

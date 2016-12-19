@@ -17,5 +17,6 @@ define(function() {
  * // Example\n\
  * float deg = czm_degreesPerRadian * rad;\n\
  */\n\
-const float czm_degreesPerRadian = 57.29577951308232;";
+const float czm_degreesPerRadian = 57.29577951308232;\n\
+";
 });

@@ -17,5 +17,6 @@ define(function() {
  * // Example\n\
  * float rad = czm_radiansPerDegree * deg;\n\
  */\n\
-const float czm_radiansPerDegree = 0.017453292519943295;";
+const float czm_radiansPerDegree = 0.017453292519943295;\n\
+";
 });

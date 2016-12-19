@@ -17,5 +17,6 @@ define(function() {
  * @name czm_webMercatorMaxLatitude\n\
  * @glslConstant\n\
  */\n\
-const float czm_webMercatorMaxLatitude = 1.4844222297453324;";
+const float czm_webMercatorMaxLatitude = 1.4844222297453324;\n\
+";
 });

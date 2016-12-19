@@ -7,12 +7,12 @@ define([
         '../Core/Cartographic',
         '../Core/clone',
         '../Core/combine',
-        '../Core/ComponentDatatype',
         '../Core/defaultValue',
         '../Core/defined',
         '../Core/defineProperties',
         '../Core/destroyObject',
         '../Core/DeveloperError',
+        '../Core/DistanceDisplayCondition',
         '../Core/FeatureDetection',
         '../Core/getAbsoluteUri',
         '../Core/getBaseUri',
@@ -47,7 +47,7 @@ define([
         '../ThirdParty/gltfDefaults',
         '../ThirdParty/Uri',
         '../ThirdParty/when',
-        './getModelAccessor',
+        './getBinaryAccessor',
         './HeightReference',
         './ModelAnimationCache',
         './ModelAnimationCollection',
@@ -56,7 +56,8 @@ define([
         './ModelMesh',
         './ModelNode',
         './Pass',
-        './SceneMode'
+        './SceneMode',
+        './ShadowMode'
     ], function(
         BoundingSphere,
         Cartesian2,
@@ -65,12 +66,12 @@ define([
         Cartographic,
         clone,
         combine,
-        ComponentDatatype,
         defaultValue,
         defined,
         defineProperties,
         destroyObject,
         DeveloperError,
+        DistanceDisplayCondition,
         FeatureDetection,
         getAbsoluteUri,
         getBaseUri,
@@ -105,7 +106,7 @@ define([
         gltfDefaults,
         Uri,
         when,
-        getModelAccessor,
+        getBinaryAccessor,
         HeightReference,
         ModelAnimationCache,
         ModelAnimationCollection,
@@ -114,7 +115,8 @@ define([
         ModelMesh,
         ModelNode,
         Pass,
-        SceneMode) {
+        SceneMode,
+        ShadowMode) {
     'use strict';
 
     // Bail out if the browser doesn't support typed arrays, to prevent the setup function
@@ -311,12 +313,12 @@ define([
      * @param {Boolean} [options.allowPicking=true] When <code>true</code>, each glTF mesh and primitive is pickable with {@link Scene#pick}.
      * @param {Boolean} [options.incrementallyLoadTextures=true] Determine if textures may continue to stream in after the model is loaded.
      * @param {Boolean} [options.asynchronous=true] Determines if model WebGL resource creation will be spread out over several frames or block until completion once all glTF files are loaded.
-     * @param {Boolean} [options.castShadows=true] Determines whether the model casts shadows from each light source.
-     * @param {Boolean} [options.receiveShadows=true] Determines whether the model receives shadows from shadow casters in the scene.
+     * @param {ShadowMode} [options.shadows=ShadowMode.ENABLED] Determines whether the model casts or receives shadows from each light source.
      * @param {Boolean} [options.debugShowBoundingVolume=false] For debugging only. Draws the bounding sphere for each draw command in the model.
      * @param {Boolean} [options.debugWireframe=false] For debugging only. Draws the model in wireframe.
      * @param {HeightReference} [options.heightReference] Determines how the model is drawn relative to terrain.
      * @param {Scene} [options.scene] Must be passed in for models that use the height reference property.
+     * @param {DistanceDisplayCondition} [options.istanceDisplayCondition] The condition specifying at what distance from the camera that this model will be displayed.
      *
      * @exception {DeveloperError} bgltf is not a valid Binary glTF file.
      * @exception {DeveloperError} Only glTF Binary version 1 is supported.
@@ -503,24 +505,14 @@ define([
         this._asynchronous = defaultValue(options.asynchronous, true);
 
         /**
-         * Determines whether the model casts shadows from each light source.
+         * Determines whether the model casts or receives shadows from each light source.
          *
-         * @type {Boolean}
+         * @type {ShadowMode}
          *
-         * @default true
+         * @default ShadowMode.ENABLED
          */
-        this.castShadows = defaultValue(options.castShadows, true);
-        this._castShadows = this.castShadows;
-
-        /**
-         * Determines whether the model receives shadows from shadow casters in the scene.
-         *
-         * @type {Boolean}
-         *
-         * @default true
-         */
-        this.receiveShadows = defaultValue(options.receiveShadows, true);
-        this._receiveShadows = this.receiveShadows;
+        this.shadows = defaultValue(options.shadows, ShadowMode.ENABLED);
+        this._shadows = this.shadows;
 
         /**
          * This property is for debugging only; it is not for production use nor is it optimized.
@@ -548,6 +540,8 @@ define([
          */
         this.debugWireframe = defaultValue(options.debugWireframe, false);
         this._debugWireframe = false;
+
+        this._distanceDisplayCondition = options.distanceDisplayCondition;
 
         // Undocumented options
         this._precreatedAttributes = options.precreatedAttributes;
@@ -868,6 +862,26 @@ define([
             get : function() {
                 return this._dirty;
             }
+        },
+
+        /**
+         * Gets or sets the condition specifying at what distance from the camera that this model will be displayed.
+         * @memberof Model.prototype
+         * @type {DistanceDisplayCondition}
+         * @default undefined
+         */
+        distanceDisplayCondition : {
+            get : function() {
+                return this._distanceDisplayCondition;
+            },
+            set : function(value) {
+                //>>includeStart('debug', pragmas.debug);
+                if (defined(value) && value.far <= value.near) {
+                    throw new DeveloperError('far must be greater than near');
+                }
+                //>>includeEnd('debug');
+                this._distanceDisplayCondition = DistanceDisplayCondition.clone(value, this._distanceDisplayCondition);
+            }
         }
     });
 
@@ -887,9 +901,11 @@ define([
     }
 
     function parseBinaryGltfHeader(uint8Array) {
+        //>>includeStart('debug', pragmas.debug);
         if (!containsGltfMagic(uint8Array)) {
             throw new DeveloperError('bgltf is not a valid Binary glTF file.');
         }
+        //>>includeEnd('debug');
 
         var view = new DataView(uint8Array.buffer, uint8Array.byteOffset, uint8Array.byteLength);
         var byteOffset = 0;
@@ -946,8 +962,7 @@ define([
      * @param {Boolean} [options.allowPicking=true] When <code>true</code>, each glTF mesh and primitive is pickable with {@link Scene#pick}.
      * @param {Boolean} [options.incrementallyLoadTextures=true] Determine if textures may continue to stream in after the model is loaded.
      * @param {Boolean} [options.asynchronous=true] Determines if model WebGL resource creation will be spread out over several frames or block until completion once all glTF files are loaded.
-     * @param {Boolean} [options.castShadows=true] Determines whether the model casts shadows from each light source.
-     * @param {Boolean} [options.receiveShadows=true] Determines whether the model receives shadows from shadow casters in the scene.
+     * @param {ShadowMode} [options.shadows=ShadowMode.ENABLED] Determines whether the model casts or receives shadows from each light source.
      * @param {Boolean} [options.debugShowBoundingVolume=false] For debugging only. Draws the bounding sphere for each {@link DrawCommand} in the model.
      * @param {Boolean} [options.debugWireframe=false] For debugging only. Draws the model in wireframe.
      *
@@ -1629,7 +1644,7 @@ define([
         }
         return undefined;
     }
-    
+
     function modifyShaderForQuantizedAttributes(shader, programName, model, context) {
         var quantizedUniforms = {};
         model._quantizedUniforms[programName] = quantizedUniforms;
@@ -2172,7 +2187,7 @@ define([
                                 attributes.push({
                                     index : attributeLocation,
                                     vertexBuffer : rendererBuffers[a.bufferView],
-                                    componentsPerAttribute : getModelAccessor(a).componentsPerAttribute,
+                                    componentsPerAttribute : getBinaryAccessor(a).componentsPerAttribute,
                                     componentDatatype : a.componentType,
                                     normalize : false,
                                     offsetInBytes : a.byteOffset,
@@ -2259,8 +2274,8 @@ define([
             WebGLConstants.FUNC_ADD]);
         var blendFuncSeparate = defaultValue(statesFunctions.blendFuncSeparate, [
             WebGLConstants.ONE,
-            WebGLConstants.ONE,
             WebGLConstants.ZERO,
+            WebGLConstants.ONE,
             WebGLConstants.ZERO]);
         var colorMask = defaultValue(statesFunctions.colorMask, [true, true, true, true]);
         var depthRange = defaultValue(statesFunctions.depthRange, [0.0, 1.0]);
@@ -2314,8 +2329,8 @@ define([
                 equationRgb : blendEquationSeparate[0],
                 equationAlpha : blendEquationSeparate[1],
                 functionSourceRgb : blendFuncSeparate[0],
-                functionSourceAlpha : blendFuncSeparate[1],
-                functionDestinationRgb : blendFuncSeparate[2],
+                functionDestinationRgb : blendFuncSeparate[1],
+                functionSourceAlpha : blendFuncSeparate[2],
                 functionDestinationAlpha : blendFuncSeparate[3]
             }
         });
@@ -2386,7 +2401,7 @@ define([
         },
         MODELINVERSETRANSPOSE : function(uniformState, model) {
             return function() {
-                return uniformState.inverseTranposeModel;
+                return uniformState.inverseTransposeModel;
             };
         },
         MODELVIEWINVERSETRANSPOSE : function(uniformState, model) {
@@ -2880,8 +2895,7 @@ define([
                 else {
                     var positions = accessors[primitive.attributes.POSITION];
                     count = positions.count;
-                    var accessorInfo = getModelAccessor(positions);
-                    offset = (positions.byteOffset / (accessorInfo.componentsPerAttribute*ComponentDatatype.getSizeInBytes(positions.componentType)));
+                    offset = 0;
                 }
 
                 var um = uniformMaps[primitive.material];
@@ -2915,6 +2929,9 @@ define([
                     mesh : runtimeMeshesByName[mesh.name]
                 };
 
+                var castShadows = ShadowMode.castShadows(model._shadows);
+                var receiveShadows = ShadowMode.receiveShadows(model._shadows);
+                
                 var command = new DrawCommand({
                     boundingVolume : new BoundingSphere(), // updated in update()
                     cull : model.cull,
@@ -2924,8 +2941,8 @@ define([
                     count : count,
                     offset : offset,
                     shaderProgram : rendererPrograms[technique.program],
-                    castShadows : model._castShadows,
-                    receiveShadows : model._receiveShadows,
+                    castShadows : castShadows,
+                    receiveShadows : receiveShadows,
                     uniformMap : uniformMap,
                     renderState : rs,
                     owner : owner,
@@ -3353,12 +3370,11 @@ define([
     }
 
     function updateShadows(model) {
-        if ((model.castShadows !== model._castShadows) || (model.receiveShadows !== model._receiveShadows)) {
-            model._castShadows = model.castShadows;
-            model._receiveShadows = model.receiveShadows;
+        if (model.shadows !== model._shadows) {
+            model._shadows = model.shadows;
 
-            var castShadows = model.castShadows;
-            var receiveShadows = model.receiveShadows;
+            var castShadows = ShadowMode.castShadows(model.shadows);
+            var receiveShadows = ShadowMode.receiveShadows(model.shadows);
             var nodeCommands = model._nodeCommands;
             var length = nodeCommands.length;
 
@@ -3559,6 +3575,35 @@ define([
         }
     }
 
+    var scratchDisplayConditionCartesian = new Cartesian3();
+    var scratchDistanceDisplayConditionCartographic = new Cartographic();
+
+    function distanceDisplayConditionVisible(model, frameState) {
+        var distance2;
+        var ddc = model.distanceDisplayCondition;
+        var nearSquared = ddc.near * ddc.near;
+        var farSquared = ddc.far * ddc.far;
+
+        if (frameState.mode === SceneMode.SCENE2D) {
+            var frustum2DWidth = frameState.camera.frustum.right - frameState.camera.frustum.left;
+            distance2 = frustum2DWidth * 0.5;
+            distance2 = distance2 * distance2;
+        } else {
+            // Distance to center of primitive's reference frame
+            var position = Matrix4.getTranslation(model.modelMatrix, scratchDisplayConditionCartesian);
+            if (frameState.mode === SceneMode.COLUMBUS_VIEW) {
+                var projection = frameState.mapProjection;
+                var ellipsoid = projection.ellipsoid;
+                var cartographic = ellipsoid.cartesianToCartographic(position, scratchDistanceDisplayConditionCartographic);
+                position = projection.project(cartographic, position);
+                Cartesian3.fromElements(position.z, position.x, position.y, position);
+            }
+            distance2 = Cartesian3.distanceSquared(position, frameState.camera.positionWC);
+        }
+
+        return (distance2 >= nearSquared) && (distance2 <= farSquared);
+    }
+
     /**
      * Called when {@link Viewer} or {@link CesiumWidget} render the scene to
      * get the draw commands needed to render this primitive.
@@ -3675,7 +3720,8 @@ define([
             }
         }
 
-        var show = this.show && (this.scale !== 0.0);
+        var displayConditionPassed = defined(this.distanceDisplayCondition) ? distanceDisplayConditionVisible(this, frameState) : true;
+        var show = this.show && displayConditionPassed && (this.scale !== 0.0);
 
         if ((show && this._state === ModelState.LOADED) || justLoaded) {
             var animated = this.activeAnimations.update(frameState) || this._cesiumAnimationsDirty;

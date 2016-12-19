@@ -57,5 +57,6 @@ czm_material czm_getMaterial(czm_materialInput materialInput)\n\
     material.shininess = 10.0;\n\
     \n\
     return material;\n\
-}";
+}\n\
+";
 });

@@ -12,5 +12,6 @@ struct czm_ray\n\
 {\n\
     vec3 origin;\n\
     vec3 direction;\n\
-};";
+};\n\
+";
 });

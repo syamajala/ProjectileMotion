@@ -25,5 +25,6 @@ void main()\n\
     }\n\
     \n\
     discard;\n\
-}";
+}\n\
+";
 });

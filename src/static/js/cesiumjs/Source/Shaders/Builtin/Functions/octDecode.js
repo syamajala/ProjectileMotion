@@ -65,5 +65,6 @@ define(function() {
     vector2 = czm_octDecode(encodedFloat2);\n\
     vector3 = czm_octDecode(vec2(x, y));\n\
  }\n\
- ";
+ \n\
+";
 });

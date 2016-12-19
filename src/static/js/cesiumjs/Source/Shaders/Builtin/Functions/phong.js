@@ -64,5 +64,6 @@ vec4 czm_private_phong(vec3 toEye, czm_material material)\n\
     color += material.specular * specular;\n\
 \n\
     return vec4(color, material.alpha);\n\
-}";
+}\n\
+";
 });

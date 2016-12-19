@@ -17,5 +17,6 @@ define(function() {
  * // Example\n\
  * float pi = 1.0 / czm_oneOverPi;\n\
  */\n\
-const float czm_oneOverPi = 0.3183098861837907;";
+const float czm_oneOverPi = 0.3183098861837907;\n\
+";
 });

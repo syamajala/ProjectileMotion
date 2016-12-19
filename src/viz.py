@@ -12,7 +12,7 @@ import itertools
 import utils
 from modules.czml import czml
 from projectile import Projectile
-
+import time as tm
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -153,7 +153,7 @@ if __name__ == '__main__':
     app.config['SECRET_KEY'] = 'mysecretkey1'
     sess = Session()
     sess.init_app(app)
-
+    start = tm.time()
     cols = 6
     rows = 21
 
@@ -166,6 +166,7 @@ if __name__ == '__main__':
     xs = []
     ys = []
     models = {}
+    data = []
 
     for i, j in itertools.product(range(1, rows), range(1, cols)):
         idx = n(cols, i-1, j)
@@ -180,20 +181,21 @@ if __name__ == '__main__':
         x, y = p.pos(time)
         xs.append(x)
         ys.append(y)
-
-        plt = go.Scatter(x=time, y=y, mode='markers', marker=dict(size=2.0))
-
-        fig.append_trace(plt, i, j)
+        plt = []
+        plt.append(go.Scatter(x=time, y=y, mode='markers', marker=dict(size=2.0),
+                              xaxis='x%d' % idx, yaxis='y%d' % idx))
 
         height, time = p.height()
-        plt = go.Scatter(x=[time, time], y=[0, height], mode='lines', text='Maximum Height')
-        fig.append_trace(plt, i, j)
+        plt.append(go.Scatter(x=[time, time], y=[0, height], mode='lines', text='Maximum Height',
+                              xaxis='x%d' % idx, yaxis='y%d' % idx))
 
+        data.extend(plt)
         fig['layout']['xaxis%d' % idx].update(title="Time", fixedrange=True)
         fig['layout']['yaxis%d' % idx].update(title="Altitude", fixedrange=True)
 
     fig['layout'].update(height=4000, width=1800, showlegend=False,
                          hovermode="closest")
+    fig['data'] = go.Data(data)
 
     plots = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
 
@@ -209,4 +211,5 @@ if __name__ == '__main__':
                                margin={'l': 0, 'r': 0, 't': 25, 'b': 0},)}
     trajs = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
 
+    print(tm.time() - start)
     socketio.run(app, host='0.0.0.0', port=8081, debug=False)

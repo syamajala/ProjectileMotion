@@ -10,7 +10,6 @@ define([
         '../../Core/loadJsonp',
         '../../Core/Matrix4',
         '../../Core/Rectangle',
-        '../../Scene/SceneMode',
         '../../ThirdParty/knockout',
         '../../ThirdParty/when',
         '../createCommand'
@@ -25,7 +24,6 @@ define([
         loadJsonp,
         Matrix4,
         Rectangle,
-        SceneMode,
         knockout,
         when,
         createCommand) {
@@ -82,7 +80,15 @@ define([
             }
         });
 
-        knockout.track(this, ['_searchText', '_isSearchInProgress']);
+        /**
+         * Gets or sets a value indicating if this instance should always show its text input field.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        this.keepExpanded = false;
+
+        knockout.track(this, ['_searchText', '_isSearchInProgress', 'keepExpanded']);
 
         /**
          * Gets a value indicating whether a search is currently in progress.  This property is observable.

@@ -23,5 +23,6 @@ define(function() {
 float czm_getLambertDiffuse(vec3 lightDirectionEC, vec3 normalEC)\n\
 {\n\
     return max(dot(lightDirectionEC, normalEC), 0.0);\n\
-}";
+}\n\
+";
 });

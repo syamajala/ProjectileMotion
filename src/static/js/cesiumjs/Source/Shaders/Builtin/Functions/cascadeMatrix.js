@@ -11,5 +11,6 @@ mat4 czm_cascadeMatrix(vec4 weights)\n\
            shadowMap_cascadeMatrices[1] * weights.y +\n\
            shadowMap_cascadeMatrices[2] * weights.z +\n\
            shadowMap_cascadeMatrices[3] * weights.w;\n\
-}";
+}\n\
+";
 });

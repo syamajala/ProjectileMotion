@@ -13,6 +13,7 @@ attribute vec4 compressedAttribute2;        // image height, color, pick color, 
 attribute vec4 eyeOffset;                   // eye offset in meters, 4 bytes free (texture range)\n\
 attribute vec4 scaleByDistance;             // near, nearScale, far, farScale\n\
 attribute vec4 pixelOffsetScaleByDistance;  // near, nearScale, far, farScale\n\
+attribute vec2 distanceDisplayCondition;    // near, far\n\
 \n\
 varying vec2 v_textureCoordinates;\n\
 \n\
@@ -41,24 +42,12 @@ const float SHIFT_RIGHT1 = 1.0 / 2.0;\n\
 \n\
 vec4 computePositionWindowCoordinates(vec4 positionEC, vec2 imageSize, float scale, vec2 direction, vec2 origin, vec2 translate, vec2 pixelOffset, vec3 alignedAxis, bool validAlignedAxis, float rotation, bool sizeInMeters)\n\
 {\n\
-    vec2 halfSize = imageSize * scale * czm_resolutionScale;\n\
+    // Note the halfSize cannot be computed in JavaScript because it is sent via\n\
+    // compressed vertex attributes that coerce it to an integer.\n\
+    vec2 halfSize = imageSize * scale * czm_resolutionScale * 0.5;\n\
     halfSize *= ((direction * 2.0) - 1.0);\n\
-    \n\
-    if (sizeInMeters)\n\
-    {\n\
-        positionEC.xy += halfSize;\n\
-    }\n\
-    \n\
-    vec4 positionWC = czm_eyeToWindowCoordinates(positionEC);\n\
-    \n\
-    if (sizeInMeters)\n\
-    {\n\
-        positionWC.xy += (origin * abs(halfSize)) / czm_metersPerPixel(positionEC);\n\
-    }\n\
-    else\n\
-    {\n\
-        positionWC.xy += (origin * abs(halfSize));\n\
-    }\n\
+\n\
+    vec2 originTranslate = origin * abs(halfSize);\n\
     \n\
 #if defined(ROTATION) || defined(ALIGNED_AXIS)\n\
     if (validAlignedAxis || rotation != 0.0)\n\
@@ -79,7 +68,20 @@ vec4 computePositionWindowCoordinates(vec4 positionEC, vec2 imageSize, float sca
         halfSize = rotationMatrix * halfSize;\n\
     }\n\
 #endif\n\
-    \n\
+\n\
+    if (sizeInMeters)\n\
+    {\n\
+        positionEC.xy += halfSize;\n\
+    }\n\
+\n\
+    vec4 positionWC = czm_eyeToWindowCoordinates(positionEC);\n\
+\n\
+    if (sizeInMeters)\n\
+    {\n\
+        originTranslate += originTranslate / czm_metersPerPixel(positionEC);\n\
+    }\n\
+\n\
+    positionWC.xy += originTranslate;\n\
     if (!sizeInMeters)\n\
     {\n\
         positionWC.xy += halfSize;\n\
@@ -207,7 +209,7 @@ void main() \n\
     \n\
     ///////////////////////////////////////////////////////////////////////////     \n\
 \n\
-#if defined(EYE_DISTANCE_SCALING) || defined(EYE_DISTANCE_TRANSLUCENCY) || defined(EYE_DISTANCE_PIXEL_OFFSET)\n\
+#if defined(EYE_DISTANCE_SCALING) || defined(EYE_DISTANCE_TRANSLUCENCY) || defined(EYE_DISTANCE_PIXEL_OFFSET) || defined(DISTANCE_DISPLAY_CONDITION)\n\
     float lengthSq;\n\
     if (czm_sceneMode == czm_sceneMode2D)\n\
     {\n\
@@ -243,6 +245,15 @@ void main() \n\
 #ifdef EYE_DISTANCE_PIXEL_OFFSET\n\
     float pixelOffsetScale = czm_nearFarScalar(pixelOffsetScaleByDistance, lengthSq);\n\
     pixelOffset *= pixelOffsetScale;\n\
+#endif\n\
+\n\
+#ifdef DISTANCE_DISPLAY_CONDITION\n\
+    float nearSq = distanceDisplayCondition.x * distanceDisplayCondition.x;\n\
+    float farSq = distanceDisplayCondition.y * distanceDisplayCondition.y;\n\
+    if (lengthSq < nearSq || lengthSq > farSq)\n\
+    {\n\
+        positionEC.xyz = vec3(0.0);\n\
+    }\n\
 #endif\n\
 \n\
     vec4 positionWC = computePositionWindowCoordinates(positionEC, imageSize, scale, direction, origin, translate, pixelOffset, alignedAxis, validAlignedAxis, rotation, sizeInMeters);\n\

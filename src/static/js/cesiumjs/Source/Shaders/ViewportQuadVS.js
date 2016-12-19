@@ -11,5 +11,6 @@ void main() \n\
 {\n\
     gl_Position = position;\n\
     v_textureCoordinates = textureCoordinates;\n\
-}";
+}\n\
+";
 });
