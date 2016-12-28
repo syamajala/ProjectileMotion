@@ -9,6 +9,7 @@
         <link rel="stylesheet" type="text/css" href="/css/columns.css">
         <link rel="stylesheet" type="text/css" href="/css/table.css">
         <link rel="stylesheet" type="text/css" href="/css/graph.css">
+        <link rel="stylesheet" type="text/css" href="/css/menu.css">
         <script src="/js/cesiumjs/Build/Cesium/Cesium.js"></script>
         <style>
          @import url(/js/cesiumjs/Build/Cesium/Widgets/widgets.css);
@@ -21,14 +22,24 @@
     <body>
 
         <div class="column column-7">
-            <div class="row" style="height: 100%">
-                <div id="cesiumContainer" style="height: 100%"></div>
-                <div id="toolbar"></div>
+            <div class="row" style="height: 93%">
+                <div id="cesium" class="tabcontent" style="height: 100%">
+                    <div id="cesiumContainer" style="height: 100%"></div>
+                    <div id="toolbar"></div>
+                </div>
+
+                <div id="plots" class="tabcontent"></div>
+            </div>
+
+            <div class="row">
+                <ul class="tab">
+                    <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'cesium')" id="defaultOpen">Cesium</a></li>
+                    <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'plots')">Plots</a></li>
+                </ul>
             </div>
         </div>
 
         <div class="column column-5">
-
             <div class="row" style="height: 50%">
                 <select class="default" id="plot_select" name="plot">
                     {% for id, plot in plots.items() %}

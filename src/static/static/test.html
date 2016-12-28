@@ -26,6 +26,47 @@
       pointer-events: none;
       font: 10px sans-serif;
       }
+     ul.tab {
+         list-style-type: none;
+         margin: 0;
+         padding: 0;
+         overflow: hidden;
+         border: 1px solid #ccc;
+         background-color: #f1f1f1;
+     }
+
+     /* Float the list items side by side */
+     ul.tab li {float: left;}
+
+     /* Style the links inside the list items */
+     ul.tab li a {
+         display: inline-block;
+         color: black;
+         text-align: center;
+         padding: 14px 16px;
+         text-decoration: none;
+         transition: 0.3s;
+         font-size: 17px;
+     }
+
+     /* Change background color of links on hover */
+     ul.tab li a:hover {
+         background-color: #ddd;
+     }
+
+     /* Create an active/current tablink class */
+     ul.tab li a:focus, .active {
+         background-color: #ccc;
+     }
+
+     /* Style the tab content */
+     .tabcontent {
+         display: none;
+         padding: 6px 12px;
+         border: 1px solid #ccc;
+         border-top: none;
+     }
+
     </style>
     <link rel="stylesheet" type="text/css" href="/css/columns.css">
     <link rel="stylesheet" type="text/css" href="/css/table.css">
@@ -34,8 +75,20 @@
   <body>
       <div class="column column-7">
           <div class="row" style="height: 100%">
-              Cesium
+
+              <ul class="tab">
+                  <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'cesium')" id="defaultOpen">Cesium</a></li>
+                  <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'plots')">Plots</a></li>
+              </ul>
+
+              <div id="Cesium" class="tabcontent">
+              </div>
+
+              <div id="Plots" class="tabcontent">
+              </div>
+
           </div>
+
       </div>
 
       <div class="column column-5">
@@ -71,5 +124,25 @@
       </div>
       <script type="text/javascript" src="/js/graph.js"></script>
       <script type="text/javascript" src="/js/messages.js"></script>
+
+      <script>
+       function openTab(evt, tabName) {
+           var i, tabcontent, tablinks;
+           tabcontent = document.getElementsByClassName("tabcontent");
+           for (i = 0; i < tabcontent.length; i++) {
+               tabcontent[i].style.display = "none";
+           }
+           tablinks = document.getElementsByClassName("tablinks");
+           for (i = 0; i < tablinks.length; i++) {
+               tablinks[i].className = tablinks[i].className.replace(" active", "");
+           }
+           document.getElementById(tabName).style.display = "block";
+           evt.currentTarget.className += " active";
+       }
+
+       // Get the element with id="defaultOpen" and click on it
+       document.getElementById("defaultOpen").click();
+      </script>
+
   </body>
 </html>
