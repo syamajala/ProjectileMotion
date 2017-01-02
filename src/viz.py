@@ -128,6 +128,7 @@ def monte_carlo_data(num):
 
     timeline = itertools.starmap(Msg, zip(range(1, 101), ['ABC']*100,
                                           ['A really long string that you need to scroll for.']*100))
+
     return render_template('viz.html',
                            plots=p.plots,
                            timeline=timeline)

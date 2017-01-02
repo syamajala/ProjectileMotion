@@ -22,21 +22,22 @@
     <body>
 
         <div class="column column-7">
-            <div class="row" style="height: 93%">
-                <div id="cesium" class="tabcontent" style="height: 100%">
-                    <div id="cesiumContainer" style="height: 100%"></div>
-                    <div id="toolbar"></div>
-                </div>
-
-                <div id="plots" class="tabcontent"></div>
-            </div>
-
             <div class="row">
                 <ul class="tab">
                     <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'cesium')" id="defaultOpen">Cesium</a></li>
                     <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'plots')">Plots</a></li>
                 </ul>
             </div>
+
+            <div class="row" style="height: 93%">
+                <div id="cesium" class="tabcontent" style="height: 100%">
+                    <div id="toolbar"></div>
+                    <div id="cesiumContainer" style="height: 100%"></div>
+                </div>
+
+                <div id="plots" class="tabcontent"></div>
+            </div>
+
         </div>
 
         <div class="column column-5">
@@ -89,6 +90,5 @@
         <script src="/js/messages.js"></script>
         <script src="/js/viz.js"></script>
         <script src="/js/plots.js"></script>
-
 	</body>
 </html>
