@@ -2,6 +2,7 @@ window.CESIUM_BASE_URL = './js/Cesium';
 require('./node_modules/cesium/Build/Cesium/Cesium.js');
 require('./node_modules/cesium/Build/Cesium/Widgets/widgets.css');
 var io = require('./node_modules/socket.io-client/dist/socket.io.min.js');
+var dat = require('./node_modules/dat.gui/build/dat.gui.min.js');
 require('./graph.js');
 require('./messages.js');
 require('./plots.js');
