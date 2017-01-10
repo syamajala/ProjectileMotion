@@ -1,7 +1,7 @@
 <template>
     <div id="cesium">
     <div id="cesiumContainer"></div>
-    <div id="toolbaar"></div>
+    <div id="toolbar"></div>
     </div>
 </template>
 
