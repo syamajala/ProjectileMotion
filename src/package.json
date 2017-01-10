@@ -1,0 +1,42 @@
+{
+  "name": "projectilemotion",
+  "version": "1.0.0",
+  "description": "View projectile motion in 3d on surface of earth. Prototype of analysis tool built for JHU APL.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack-dev-server --open --inline --hot",
+    "build": "webpack --progress --hide-modules"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syamajala/ProjectileMotion.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/syamajala/ProjectileMotion/issues"
+  },
+  "homepage": "https://github.com/syamajala/ProjectileMotion#readme",
+  "dependencies": {
+    "cesium": "^1.29.0",
+    "d3": "^4.4.0",
+    "dat.gui": "^0.6.1",
+    "element-ui": "^1.1.2",
+    "plotly.js": "^1.21.2",
+    "socket.io-client": "^1.7.2",
+    "vue": "^2.1.8"
+  },
+  "devDependencies": {
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.18.0",
+    "css-loader": "^0.26.1",
+    "file-loader": "^0.9.0",
+    "html-loader": "^0.4.4",
+    "script-loader": "^0.7.0",
+    "style-loader": "^0.13.1",
+    "vue-loader": "^10.0.2",
+    "vue-template-compiler": "^2.1.8",
+    "webpack": "^1.14.0"
+  }
+}

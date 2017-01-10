@@ -6,99 +6,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
 
         <title>Hello World!</title>
-        <link rel="stylesheet" href="/node_modules/element-ui/lib/theme-default/index.css">
-        <link rel="stylesheet" type="text/css" href="/css/graph.css">
-        <script src="/js/cesiumjs/Build/Cesium/Cesium.js"></script>
-        <style>
-         @import url(/js/cesiumjs/Build/Cesium/Widgets/widgets.css);
-        </style>
         <style>
          html, body {
              height: 100%;
              width: 100%;
-         }
-
-         body {
              margin: 0;
              padding: 0;
-         }
-
-         #toolbar {
-             position: absolute;
-             top: 5px;
-             left: 5px;
-             opacity: 0.6;
+             overflow: hidden;
          }
         </style>
-        <script src="/node_modules/socket.io-client/dist/socket.io.min.js"></script>
-        <script src="/js/d3js/d3.min.js"></script>
-        <script src="/js/datgui/dat.gui.js"></script>
-        <script src="/js/plotly.js/dist/plotly.min.js"></script>
     </head>
     <body>
-        <div id="app">
-            <el-col :span="14">
-                <div id="cesiumContainer" style="z-index: 1;"></div>
-                <div id="toolbar" style="z-index: 2;"></div>
-            </el-col>
-
-            <el-col :span="7">
-                <el-row style="height: 50%">
-                    <select class="default" id="plot_select" name="plot">
-                        {% for id, plot in plots.items() %}
-                        <option value={{ id|e }} {% if id == "plot0" %} selected {% endif %}>
-                            {{ plot.title|e }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                    {% for id, plot in plots.items() %}
-                    {{ plot.div|safe }}
-                    {% endfor %}
-                </el-row>
-
-                <el-row style="height: 45%; margin-top:1em;">
-                    <select class="default" id="message_data_select" name="messages">
-                        <option value="messageData0" selected>Table</option>
-                        <option value="messageData1">Graph</option>
-                    </select>
-
-                    <div id="messageData0" class="tableContainer" style="visibility: visible; height: 98%">
-                        <table class="scrollTable">
-                            <thead class="fixedHeader">
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Event</th>
-                                    <th>Fields</th>
-                                </tr>
-                            </thead>
-                            <tbody class="scrollContent">
-                                {% for msg in timeline %}
-                                <tr>
-                                    <td>{{ msg.time }}</td>
-                                    <td>{{ msg.event }}</td>
-                                    <td>{{ msg.fields }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div id="messageData1" class="graph" style="visibility: hidden;"></div>
-                </el-row>
-            </el-col>
-        </div>
-
-        <script src="/node_modules/vue/dist/vue.js"></script>
-        <script src="/node_modules/element-ui/lib/index.js"></script>
-        <script>
-         new Vue({
-             delimiters: ['${', '}'],
-             el: '#app',
-         })
-        </script>
-        <script src="/js/graph.js"></script>
-        <script src="/js/messages.js"></script>
-        <script src="/js/viz.js"></script>
-        <script src="/js/plots.js"></script>
+        <div id="app"></div>
+        <script src="/static/js/app.js"></script>
     </body>
 </html>
