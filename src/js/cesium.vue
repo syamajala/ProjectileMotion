@@ -8,8 +8,7 @@
 <script>
 require('../node_modules/cesium/Build/Cesium/Cesium.js');
 require('../node_modules/cesium/Build/Cesium/Widgets/widgets.css');
-require('../node_modules/socket.io-client/dist/socket.io.min.js');
-require('../node_modules/dat.gui/build/dat.gui.min.js');
+
 
 export default {
     mounted()
@@ -43,6 +42,7 @@ export default {
 
         scene.globe.enableLighting = true;
 
+        var io = require('../node_modules/socket.io-client/dist/socket.io.min.js');
         var socket = io.connect('http://'.concat(location.hostname, ':', location.port), {
             remeberTransport: false,
             transports: ['websocket']
@@ -66,6 +66,7 @@ export default {
             window.open(data);
         }
 
+        var dat = require('../node_modules/dat.gui/build/dat.gui.min.js');
         var gui = new dat.GUI({ autoPlace: false });
         gui.add(viewer, 'screenshot').name("Screenshot");
 
