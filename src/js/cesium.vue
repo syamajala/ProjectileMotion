@@ -13,7 +13,7 @@ require('../node_modules/cesium/Build/Cesium/Widgets/widgets.css');
 export default {
     mounted()
     {
-        window.CESIUM_BASE_URL = './static/js/Cesium'
+        window.CESIUM_BASE_URL = './js/Cesium'
         var Cesium = window.Cesium;
 
         var viewer = new Cesium.Viewer('cesiumContainer', {
