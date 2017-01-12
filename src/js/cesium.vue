@@ -148,7 +148,7 @@ export default {
 <style>
 #cesiumContainer {
     width: 100%;
-    height: 100%;
+    height: 54em;
     margin: 0;
     padding: 0;
     overflow: hidden;
