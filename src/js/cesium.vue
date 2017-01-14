@@ -1,3 +1,4 @@
+
 <template>
     <div id="cesium">
     <div id="cesiumContainer"></div>
@@ -8,11 +9,14 @@
 <script>
 require('../node_modules/cesium/Build/Cesium/Cesium.js');
 require('../node_modules/cesium/Build/Cesium/Widgets/widgets.css');
-
+import bus from './bus.js'
 
 export default {
+
     mounted()
     {
+        var dat = require('../node_modules/dat.gui/build/dat.gui.min.js');
+
         window.CESIUM_BASE_URL = './js/Cesium'
         var Cesium = window.Cesium;
 
@@ -42,37 +46,16 @@ export default {
 
         scene.globe.enableLighting = true;
 
-        var io = require('../node_modules/socket.io-client/dist/socket.io.min.js');
-        var socket = io.connect('http://'.concat(location.hostname, ':', location.port), {
-            remeberTransport: false,
-            transports: ['websocket']
-        });
-
-        var reload = false;
-
-        socket.on('connect', function() {
-            if(reload)
-            {
-                location.reload()
-            }
-
-            reload = true;
-            socket.emit('loadMessageData', window.location.pathname);
-        })
-
         viewer.screenshot = function() {
             this.render();
             var data = this.canvas.toDataURL('image/jpeg', 1);
             window.open(data);
         }
 
-        var dat = require('../node_modules/dat.gui/build/dat.gui.min.js');
         var gui = new dat.GUI({ autoPlace: false });
         gui.add(viewer, 'screenshot').name("Screenshot");
 
-        socket.on('loadCesiumData', function(data) {
-
-            data = JSON.parse(data);
+        bus.$on('loadCesiumData', function(data) {
 
             viewer.dataSources.add(Cesium.CzmlDataSource.load(data)).then(function(ds) {
 
@@ -100,47 +83,6 @@ export default {
 
             viewer.clock.shouldAnimate = true;
         })
-
-        socket.on('loadMessageData', function(mdata) {
-
-            // mdata = JSON.parse(mdata)
-
-            // var rStack = [];
-
-            // function reverseMsg(msg) {
-            //     var oFrom = msg.from;
-            //     msg.from = msg.to;
-            //     msg.to = oFrom;
-            //     return msg;
-            // };
-
-            // var clock = viewer.clock;
-            // clock.onTick.addEventListener(function() {
-            //     var time = Cesium.JulianDate.secondsDifference(clock.currentTime, clock.startTime);
-
-            //     if (clock.multiplier > 0) {
-
-            //         if (mdata.length > 0 && time >= mdata[0]["time"])
-            //         {
-            //             var msg = mdata.shift();
-            //             sendMessage(svg, graph, [msg], clock.multiplier);
-            //             rStack.push(reverseMsg(msg));
-            //         }
-            //     }
-            //     else if (clock.multiplier < 0)
-            //     {
-
-            //         if (rStack.length > 0 && time <= rStack[rStack.length-1]["time"])
-            //         {
-            //             var msg = rStack.pop();
-            //             sendMessage(svg, graph, [msg], Math.abs(clock.multiplier));
-            //             mdata.unshift(reverseMsg(msg));
-            //         }
-            //     }
-            // })
-            socket.emit('loadCesiumData');
-        });
-
     }
 }
 </script>

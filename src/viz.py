@@ -141,7 +141,7 @@ def handle_loadCesiumData():
 
 
 @socketio.on('loadMessageData')
-def handle_loadMessageData(mc_num):
+def handle_loadMessageData():
 
     msgData = [{"id": 0, "name": "MT-230", "from": "CND", "to": "WCS", "time": 3.0},
                {"id": 1, "name": "MT-071", "from": "WCS", "to": "CND", "time": 5.0}]
@@ -199,7 +199,6 @@ if __name__ == '__main__':
     fig['data'] = go.Data(data)
 
     plots = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
-
     tof = max(tofs)
     time = np.arange(tof)
     pos = zip(xs, ys)

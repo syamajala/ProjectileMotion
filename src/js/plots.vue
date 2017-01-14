@@ -8,14 +8,13 @@
     </el-option>
   </el-select>
 
-  <div v-if="value == 'Option1'">option1</div>
-  <div v-else-if="value == 'Option2'">option2</div>
+
   </div>
 </template>
 
 <script>
   export default {
-    data() {
+      data() {
       return {
         options: [{
           value: 'Option1',
@@ -33,7 +32,7 @@
           value: 'Option5',
           label: 'Option5'
         }],
-        value: 'Option1'
+          value: 'Option1',
       }
     }
   }

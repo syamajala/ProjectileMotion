@@ -1,7 +1,6 @@
 import numpy as np
 import colorlover as cl
 import plotly.graph_objs as go
-import utils
 from plotly.offline import plot
 from bs4 import BeautifulSoup
 
@@ -37,10 +36,6 @@ class Plot():
         soup.body.unwrap()
         pdiv = soup.new_tag('div', id=self.plot_id, )
         pdiv['class'] = 'plots'
-        pdiv['style'] = 'visibility: hidden;'
-
-        if self.plot_id == 'plot0':
-            pdiv['style'] = 'visibility: visible;'
 
         pdiv.insert(1, soup)
         self.div = str(pdiv)
