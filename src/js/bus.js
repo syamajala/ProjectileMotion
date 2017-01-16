@@ -26,6 +26,11 @@ socket.on('loadCesiumData', function(data) {
     bus.$emit('loadCesiumData', data);
 });
 
-// bus.$on('loadCesiumData', function() {
-//     socket.emit('loadCesiumData');
-// });
+bus.$on('loadPlots', function() {
+    socket.emit('loadPlots');
+});
+
+socket.on('loadPlots', function(data) {
+    data = JSON.parse(data);
+    bus.$emit('loadPlotData', data);
+})

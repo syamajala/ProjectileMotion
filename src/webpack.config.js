@@ -1,5 +1,6 @@
 var path = require('path')
 var webpack = require('webpack')
+var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   entry: './js/main.js',
@@ -43,7 +44,7 @@ module.exports = {
     historyApiFallback: true,
     noInfo: true
   },
-  devtool: '#eval-source-map'
+  devtool: '#eval-source-map',
 }
 
 if (process.env.NODE_ENV === 'production') {

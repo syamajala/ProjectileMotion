@@ -67,13 +67,12 @@ def monte_carlo_data(num):
     y = (20925646.3255*.3048) + y
     z = np.zeros(time.size)
 
-    session['tof'] = tof
     vx, vy = p.vel(time)
 
     speed = list(map(np.linalg.norm, zip(vx, vy)))
-    p.make_plot(time, speed, title="Speed vs Time", xaxis_label="Time", yaxis_label="Speed")
-    p.make_plot(time, y, title="Alt vs Time", xaxis_label="Time", yaxis_label="Alt")
-    p.make_plot(time, x, y-(20925646.3255*.3048), "Trajectory", "Time", "X", "Y")
+    p.make_plot("Speed vs Time", time, speed, xaxis_label="Time", yaxis_label="Speed")
+    # p.make_plot("Alt vs Time", time, y, xaxis_label="Time", yaxis_label="Alt")
+    # p.make_plot("Trajectory", time, x, y-(20925646.3255*.3048), "Time", "X", "Y")
 
     doc = czml.CZML()
     packet1 = czml.CZMLPacket(id='document', version='1.0')
@@ -118,6 +117,7 @@ def monte_carlo_data(num):
     doc.append(glider_packet)
 
     session['doc'] = doc
+    session['plots'] = p.plots
 
     class Msg():
 
@@ -128,16 +128,20 @@ def monte_carlo_data(num):
 
     timeline = itertools.starmap(Msg, zip(range(1, 101), ['ABC']*100,
                                           ['A really long string that you need to scroll for.']*100))
-    return render_template('viz2.html',
-                           # plots=p.plots,
-                           # timeline=timeline
-    )
+    return render_template('viz2.html')
 
 
 @socketio.on('loadCesiumData')
 def handle_loadCesiumData():
     doc = session.get('doc', None)
     emit('loadCesiumData', doc.dumps())
+
+
+@socketio.on('loadPlots')
+def handle_loadPlots():
+    plots = session.get('plots', None)
+    plots = json.dumps({'options': plots.values(), 'value': 'plot0'})
+    emit('loadPlots', plots)
 
 
 @socketio.on('loadMessageData')

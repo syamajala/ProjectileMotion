@@ -1,8 +1,9 @@
+import json
+import collections
 import numpy as np
 import colorlover as cl
 import plotly.graph_objs as go
-from plotly.offline import plot
-from bs4 import BeautifulSoup
+from plotly import utils
 
 
 G = 9.8
@@ -10,11 +11,14 @@ G = 9.8
 
 class Plot():
 
-    def __init__(self, x, y, z=None, title="", plot_id=0,
+    plot_id = 0
+
+    def __init__(self, title, x, y, z=None,
                  xaxis_label="", yaxis_label="", zaxis_label="", color=""):
 
         self.title = title
-        self.plot_id = "plot%d" % plot_id
+        self.plot_id = Plot.plot_id
+        Plot.plot_id += 1
 
         layout = go.Layout(title=title,
                            xaxis={'title': xaxis_label},
@@ -28,17 +32,12 @@ class Plot():
         else:
             line = go.Scatter(x=x, y=y, line={'color': color})
 
-        fig = {'data': [line], 'layout': layout}
-        div = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
+        data = json.dumps(line, cls=utils.PlotlyJSONEncoder)
+        layout = json.dumps(layout, cls=utils.PlotlyJSONEncoder)
+        config = json.dumps({'show_link': False})
 
-        soup = BeautifulSoup(div, 'lxml')
-        soup.html.unwrap()
-        soup.body.unwrap()
-        pdiv = soup.new_tag('div', id=self.plot_id, )
-        pdiv['class'] = 'plots'
-
-        pdiv.insert(1, soup)
-        self.div = str(pdiv)
+        self.plot = {'title': title, 'div': 'plot%d' % self.plot_id,
+                     'data': data, 'layout': layout, 'config': config}
 
 
 class Projectile():
@@ -55,8 +54,7 @@ class Projectile():
 
         self.color = cl.scales['12']['qual']['Set3'][0]
 
-        self.plot_id = 0
-        self.plots = {}
+        self.plots = collections.OrderedDict()
 
     def pos(self, t):
 
@@ -91,10 +89,9 @@ class Projectile():
 
         return (self.h, self.toh)
 
-    def make_plot(self, x, y, z=None, title="", xaxis_label="", yaxis_label="", zaxis_label=""):
-        p = Plot(x, y, z=z,
-                 title=title, plot_id=self.plot_id,
+    def make_plot(self, title, x, y, z=None, xaxis_label="", yaxis_label="", zaxis_label=""):
+        p = Plot(title, x, y, z=z,
                  xaxis_label=xaxis_label, yaxis_label=yaxis_label, zaxis_label=zaxis_label,
                  color=self.color)
-        self.plot_id += 1
-        self.plots[p.plot_id] = p
+
+        self.plots[p.plot_id] = p.plot
