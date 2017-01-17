@@ -140,7 +140,7 @@ def handle_loadCesiumData():
 @socketio.on('loadPlots')
 def handle_loadPlots():
     plots = session.get('plots', None)
-    plots = json.dumps({'options': plots.values(), 'value': 'plot0'})
+    plots = json.dumps({'options': plots.values(), 'div': 'plot0'})
     emit('loadPlots', plots)
 
 
