@@ -32,7 +32,8 @@ class Plot():
         else:
             line = go.Scatter(x=x, y=y, line={'color': color})
 
-        data = json.dumps(line, cls=utils.PlotlyJSONEncoder)
+        data = json.dumps([line], cls=utils.PlotlyJSONEncoder)
+
         layout = json.dumps(layout, cls=utils.PlotlyJSONEncoder)
         config = json.dumps({'show_link': False})
 

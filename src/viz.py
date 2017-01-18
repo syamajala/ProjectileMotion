@@ -59,75 +59,76 @@ def point_pkt(pos):
 
 @app.route("/mc<int:num>")
 def monte_carlo_data(num):
+    if 'doc' not in session:
+        p = models[num]
+        tof = np.ceil(p.timeOfFlight())
+        time = np.arange(0, tof, 0.1)
+        x, y = p.pos(time)
+        y = (20925646.3255*.3048) + y
+        z = np.zeros(time.size)
 
-    p = models[num]
-    tof = np.ceil(p.timeOfFlight())
-    time = np.arange(0, tof, 0.1)
-    x, y = p.pos(time)
-    y = (20925646.3255*.3048) + y
-    z = np.zeros(time.size)
+        vx, vy = p.vel(time)
 
-    vx, vy = p.vel(time)
+        speed = list(map(np.linalg.norm, zip(vx, vy)))
+        p.make_plot("Speed vs Time", time, speed, xaxis_label="Time", yaxis_label="Speed")
+        # p.make_plot("Alt vs Time", time, y, xaxis_label="Time", yaxis_label="Alt")
+        # p.make_plot("Trajectory", time, x, y-(20925646.3255*.3048), "Time", "X", "Y")
 
-    speed = list(map(np.linalg.norm, zip(vx, vy)))
-    p.make_plot("Speed vs Time", time, speed, xaxis_label="Time", yaxis_label="Speed")
-    # p.make_plot("Alt vs Time", time, y, xaxis_label="Time", yaxis_label="Alt")
-    # p.make_plot("Trajectory", time, x, y-(20925646.3255*.3048), "Time", "X", "Y")
+        doc = czml.CZML()
+        packet1 = czml.CZMLPacket(id='document', version='1.0')
+        doc.packets.append(packet1)
 
-    doc = czml.CZML()
-    packet1 = czml.CZMLPacket(id='document', version='1.0')
-    doc.packets.append(packet1)
+        interval = utils.build_interval("2000-01-01T11:58:55Z", tof)
 
-    interval = utils.build_interval("2000-01-01T11:58:55Z", tof)
+        clock_packet = czml.CZMLPacket(id="document",
+                                       name="CZML Path",
+                                       version="1.0",
+                                       clock={"interval": interval,
+                                              "currentTime:": "2000-01-01T11:58:50Z",
+                                              "multiplier": 1,
+                                              "range": "CLAMPED"})
+        color = utils.rgb2rgba(p.color)
+        pos = zip(time, x, y, z, range(0, len(x)), [color]*len(x))
+        pkts = list(map(point_pkt, pos))
 
-    clock_packet = czml.CZMLPacket(id="document",
-                                   name="CZML Path",
-                                   version="1.0",
-                                   clock={"interval": interval,
-                                          "currentTime:": "2000-01-01T11:58:50Z",
-                                          "multiplier": 1,
-                                          "range": "CLAMPED"})
-    color = utils.rgb2rgba(p.color)
-    pos = zip(time, x, y, z, range(0, len(x)), [color]*len(x))
-    pkts = list(map(point_pkt, pos))
+        doc.append(clock_packet)
+        for pkt in pkts:
+            doc.append(pkt)
 
-    doc.append(clock_packet)
-    for pkt in pkts:
-        doc.append(pkt)
+        glider_packet = czml.CZMLPacket(id="path",
+                                        name="Path",
+                                        availability=interval)
 
-    glider_packet = czml.CZMLPacket(id="path",
-                                    name="Path",
-                                    availability=interval)
+        color_pack = czml.Color(rgba=utils.rgb2rgba(cl.scales['12']['qual']['Set3'][3]))
+        polylineOutline_pack = czml.PolylineOutline(color=color_pack)
+        material_pack = czml.Material(polylineOutline=polylineOutline_pack)
+        path_pack = czml.Path(material=material_pack,
+                              width=5,
+                              leadTime=0,
+                              show=True)
+        glider_packet.path = path_pack
 
-    color_pack = czml.Color(rgba=utils.rgb2rgba(cl.scales['12']['qual']['Set3'][3]))
-    polylineOutline_pack = czml.PolylineOutline(color=color_pack)
-    material_pack = czml.Material(polylineOutline=polylineOutline_pack)
-    path_pack = czml.Path(material=material_pack,
-                          width=5,
-                          leadTime=0,
-                          show=True)
-    glider_packet.path = path_pack
+        position_pack = czml.Position(epoch="2000-01-01T11:58:55Z")
+        pos = zip(time, x, y, z)
 
-    position_pack = czml.Position(epoch="2000-01-01T11:58:55Z")
-    pos = zip(time, x, y, z)
+        position_pack.cartesian = list(itertools.chain.from_iterable(pos))
+        glider_packet.position = position_pack
 
-    position_pack.cartesian = list(itertools.chain.from_iterable(pos))
-    glider_packet.position = position_pack
+        doc.append(glider_packet)
 
-    doc.append(glider_packet)
+        session['doc'] = doc
+        session['plots'] = p.plots
 
-    session['doc'] = doc
-    session['plots'] = p.plots
+        class Msg():
 
-    class Msg():
+            def __init__(self, time, event, fields):
+                self.time = time
+                self.event = event
+                self.fields = fields
 
-        def __init__(self, time, event, fields):
-            self.time = time
-            self.event = event
-            self.fields = fields
+        timeline = itertools.starmap(Msg, zip(range(1, 101), ['ABC']*100,
+                                              ['A really long string that you need to scroll for.']*100))
 
-    timeline = itertools.starmap(Msg, zip(range(1, 101), ['ABC']*100,
-                                          ['A really long string that you need to scroll for.']*100))
     return render_template('viz2.html')
 
 

@@ -8,7 +8,7 @@
     </el-option>
   </el-select>
 
-  <div v-for="item in options" v-show="div == item.div" :id="item.div"></div>
+  <div v-for="item in options" v-show="div == item.div" :id="item.div" class="plot"></div>
   </div>
 </template>
 
@@ -21,27 +21,42 @@ export default {
         bus.$on('loadPlotData', function(data) {
             self.options = data['options'];
             self.div = data['div'];
+            self.build_plots = true
         })
+
+        bus.$emit('loadPlots')
     },
 
     data() {
         return { options: [], div: '' }
     },
 
-    mounted() {
-        bus.$emit('loadPlots')
-
-        for(var i = 0; i < this.options.length; i++)
-        {
-            var elem = this.options[i]
-            // Plotly.newPlot(elem.div, elem.data, elem.layout, elem.config)
+    updated() {
+        var Plotly = require('../node_modules/plotly.js/dist/plotly.min.js')
+        if (this.build_plots) {
+            for(var i = 0; i < this.options.length; i++)
+            {
+                var elem = this.options[i]
+                var trace1 = {
+                    x: [1, 2, 3, 4],
+                    y: [10, 15, 13, 17],
+                    mode: 'markers',
+                    type: 'scatter'
+                };
+                Plotly.newPlot(elem.div, [trace1])
+            }
+            this.build_plots = false;
         }
     }
 }
 </script>
 
 <style>
-  #plots {
-  height: 25em;
-  }
+#plots {
+    height: 25em;
+}
+
+.plot {
+    height: 25em;
+}
 </style>
