@@ -4,6 +4,7 @@ from flask_socketio import SocketIO, emit
 from flask_session import Session
 from plotly.offline import plot
 from plotly import tools
+import plotly.utils as plutils
 import plotly.graph_objs as go
 import numpy as np
 import colorlover as cl
@@ -59,75 +60,76 @@ def point_pkt(pos):
 
 @app.route("/mc<int:num>")
 def monte_carlo_data(num):
-    if 'doc' not in session:
-        p = models[num]
-        tof = np.ceil(p.timeOfFlight())
-        time = np.arange(0, tof, 0.1)
-        x, y = p.pos(time)
-        y = (20925646.3255*.3048) + y
-        z = np.zeros(time.size)
 
-        vx, vy = p.vel(time)
+    p = models[num]
+    tof = np.ceil(p.timeOfFlight())
+    time = np.arange(0, tof, 0.1)
+    x, y = p.pos(time)
+    y = (20925646.3255*.3048) + y
+    z = np.zeros(time.size)
 
-        speed = list(map(np.linalg.norm, zip(vx, vy)))
-        p.make_plot("Speed vs Time", time, speed, xaxis_label="Time", yaxis_label="Speed")
-        # p.make_plot("Alt vs Time", time, y, xaxis_label="Time", yaxis_label="Alt")
-        # p.make_plot("Trajectory", time, x, y-(20925646.3255*.3048), "Time", "X", "Y")
+    vx, vy = p.vel(time)
 
-        doc = czml.CZML()
-        packet1 = czml.CZMLPacket(id='document', version='1.0')
-        doc.packets.append(packet1)
+    speed = list(map(np.linalg.norm, zip(vx, vy)))
+    p.make_plot("Speed vs Time", time, speed, xaxis_label="Time", yaxis_label="Speed")
+    p.make_plot("Alt vs Time", time, y, xaxis_label="Time", yaxis_label="Alt")
+    p.make_plot("Trajectory", time, x, y-(20925646.3255*.3048), "Time", "X", "Y")
 
-        interval = utils.build_interval("2000-01-01T11:58:55Z", tof)
+    doc = czml.CZML()
+    packet1 = czml.CZMLPacket(id='document', version='1.0')
+    doc.packets.append(packet1)
 
-        clock_packet = czml.CZMLPacket(id="document",
-                                       name="CZML Path",
-                                       version="1.0",
-                                       clock={"interval": interval,
-                                              "currentTime:": "2000-01-01T11:58:50Z",
-                                              "multiplier": 1,
-                                              "range": "CLAMPED"})
-        color = utils.rgb2rgba(p.color)
-        pos = zip(time, x, y, z, range(0, len(x)), [color]*len(x))
-        pkts = list(map(point_pkt, pos))
+    interval = utils.build_interval("2000-01-01T11:58:55Z", tof)
 
-        doc.append(clock_packet)
-        for pkt in pkts:
-            doc.append(pkt)
+    clock_packet = czml.CZMLPacket(id="document",
+                                   name="CZML Path",
+                                   version="1.0",
+                                   clock={"interval": interval,
+                                          "currentTime:": "2000-01-01T11:58:50Z",
+                                          "multiplier": 1,
+                                          "range": "CLAMPED"})
+    color = utils.rgb2rgba(p.color)
+    pos = zip(time, x, y, z, range(0, len(x)), [color]*len(x))
+    pkts = list(map(point_pkt, pos))
 
-        glider_packet = czml.CZMLPacket(id="path",
-                                        name="Path",
-                                        availability=interval)
+    doc.append(clock_packet)
+    for pkt in pkts:
+        doc.append(pkt)
 
-        color_pack = czml.Color(rgba=utils.rgb2rgba(cl.scales['12']['qual']['Set3'][3]))
-        polylineOutline_pack = czml.PolylineOutline(color=color_pack)
-        material_pack = czml.Material(polylineOutline=polylineOutline_pack)
-        path_pack = czml.Path(material=material_pack,
-                              width=5,
-                              leadTime=0,
-                              show=True)
-        glider_packet.path = path_pack
+    glider_packet = czml.CZMLPacket(id="path",
+                                    name="Path",
+                                    availability=interval)
 
-        position_pack = czml.Position(epoch="2000-01-01T11:58:55Z")
-        pos = zip(time, x, y, z)
+    color_pack = czml.Color(rgba=utils.rgb2rgba(cl.scales['12']['qual']['Set3'][3]))
+    polylineOutline_pack = czml.PolylineOutline(color=color_pack)
+    material_pack = czml.Material(polylineOutline=polylineOutline_pack)
+    path_pack = czml.Path(material=material_pack,
+                          width=5,
+                          leadTime=0,
+                          show=True)
+    glider_packet.path = path_pack
 
-        position_pack.cartesian = list(itertools.chain.from_iterable(pos))
-        glider_packet.position = position_pack
+    position_pack = czml.Position(epoch="2000-01-01T11:58:55Z")
+    pos = zip(time, x, y, z)
 
-        doc.append(glider_packet)
+    position_pack.cartesian = list(itertools.chain.from_iterable(pos))
+    glider_packet.position = position_pack
 
-        session['doc'] = doc
-        session['plots'] = p.plots
+    doc.append(glider_packet)
 
-        class Msg():
+    session['doc'] = doc
+    session['num'] = num
+    # session['plots'] = p.plots
 
-            def __init__(self, time, event, fields):
-                self.time = time
-                self.event = event
-                self.fields = fields
+    class Msg():
 
-        timeline = itertools.starmap(Msg, zip(range(1, 101), ['ABC']*100,
-                                              ['A really long string that you need to scroll for.']*100))
+        def __init__(self, time, event, fields):
+            self.time = time
+            self.event = event
+            self.fields = fields
+
+    timeline = itertools.starmap(Msg, zip(range(1, 101), ['ABC']*100,
+                                          ['A really long string that you need to scroll for.']*100))
 
     return render_template('viz2.html')
 
@@ -138,11 +140,22 @@ def handle_loadCesiumData():
     emit('loadCesiumData', doc.dumps())
 
 
+@socketio.on('getPlotData')
+def handle_getPlotData(plot):
+    num = session.get('num', None)
+    p = models[num]
+    plot = p.plots[plot]
+    plot = json.dumps(plot, cls=plutils.PlotlyJSONEncoder)
+    emit('recvPlotData', plot)
+
+
 @socketio.on('loadPlots')
 def handle_loadPlots():
-    plots = session.get('plots', None)
-    plots = json.dumps({'options': plots.values(), 'div': 'plot0'})
-    emit('loadPlots', plots)
+    num = session.get('num', None)
+    p = models[num]
+    plots = [{'title': plot['title'], 'div': plot['div']}
+             for k, plot in p.plots.iteritems()]
+    emit('loadPlots', json.dumps({'options': plots, 'div': 'plot0'}))
 
 
 @socketio.on('loadMessageData')

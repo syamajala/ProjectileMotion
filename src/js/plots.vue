@@ -24,6 +24,11 @@ export default {
             self.build_plots = true
         })
 
+        bus.$on('recvPlotData', function(elem) {
+            var Plotly = require('../node_modules/plotly.js/dist/plotly.min.js')
+            Plotly.newPlot(elem.div, elem.data, elem.layout, elem.config);
+        })
+
         bus.$emit('loadPlots')
     },
 
@@ -32,18 +37,12 @@ export default {
     },
 
     updated() {
-        var Plotly = require('../node_modules/plotly.js/dist/plotly.min.js')
+
         if (this.build_plots) {
             for(var i = 0; i < this.options.length; i++)
             {
                 var elem = this.options[i]
-                var trace1 = {
-                    x: [1, 2, 3, 4],
-                    y: [10, 15, 13, 17],
-                    mode: 'markers',
-                    type: 'scatter'
-                };
-                Plotly.newPlot(elem.div, [trace1])
+                bus.$emit('getPlotData', elem.div)
             }
             this.build_plots = false;
         }

@@ -1,9 +1,7 @@
-import json
 import collections
 import numpy as np
 import colorlover as cl
 import plotly.graph_objs as go
-from plotly import utils
 
 
 G = 9.8
@@ -11,14 +9,14 @@ G = 9.8
 
 class Plot():
 
-    plot_id = 0
+    pid = 0
 
     def __init__(self, title, x, y, z=None,
                  xaxis_label="", yaxis_label="", zaxis_label="", color=""):
 
         self.title = title
-        self.plot_id = Plot.plot_id
-        Plot.plot_id += 1
+        self.plot_id = 'plot%d' % Plot.pid
+        Plot.pid += 1
 
         layout = go.Layout(title=title,
                            xaxis={'title': xaxis_label},
@@ -32,13 +30,10 @@ class Plot():
         else:
             line = go.Scatter(x=x, y=y, line={'color': color})
 
-        data = json.dumps([line], cls=utils.PlotlyJSONEncoder)
+        config = {'show_link': False}
 
-        layout = json.dumps(layout, cls=utils.PlotlyJSONEncoder)
-        config = json.dumps({'show_link': False})
-
-        self.plot = {'title': title, 'div': 'plot%d' % self.plot_id,
-                     'data': data, 'layout': layout, 'config': config}
+        self.plot = {'title': title, 'div': self.plot_id,
+                     'data': [line], 'layout': layout, 'config': config}
 
 
 class Projectile():
@@ -94,5 +89,4 @@ class Projectile():
         p = Plot(title, x, y, z=z,
                  xaxis_label=xaxis_label, yaxis_label=yaxis_label, zaxis_label=zaxis_label,
                  color=self.color)
-
         self.plots[p.plot_id] = p.plot
