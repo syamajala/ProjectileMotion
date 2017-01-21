@@ -34,12 +34,3 @@ socket.on('loadPlots', function(data) {
     data = JSON.parse(data);
     bus.$emit('loadPlotData', data);
 })
-
-bus.$on('getPlotData', function(elem) {
-    socket.emit('getPlotData', elem)
-})
-
-socket.on('recvPlotData', function(data) {
-    data = JSON.parse(data)
-    bus.$emit('recvPlotData', data)
-})

@@ -21,12 +21,8 @@ export default {
         bus.$on('loadPlotData', function(data) {
             self.options = data['options'];
             self.div = data['div'];
-            self.build_plots = true
-        })
-
-        bus.$on('recvPlotData', function(elem) {
-            var Plotly = require('../node_modules/plotly.js/dist/plotly.min.js')
-            Plotly.newPlot(elem.div, elem.data, elem.layout, elem.config);
+            self.plots = data['data']
+            self.build_plots = true;
         })
 
         bus.$emit('loadPlots')
@@ -37,14 +33,15 @@ export default {
     },
 
     updated() {
-
-        if (this.build_plots) {
-            for(var i = 0; i < this.options.length; i++)
+        var Plotly = require('../node_modules/plotly.js/dist/plotly.min.js')
+        if(this.build_plots) {
+            for(var i = 0; i < this.plots.length; i++)
             {
-                var elem = this.options[i]
-                bus.$emit('getPlotData', elem.div)
+                var elem = JSON.parse(this.plots[i])
+                Plotly.newPlot(elem.div, elem.data, elem.layout, elem.config);
             }
             this.build_plots = false;
+
         }
     }
 }

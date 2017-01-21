@@ -79,9 +79,8 @@ export default {
                 toolbar.appendChild(gui.domElement);
 
                 viewer.zoomTo(ds);
+                viewer.clock.shouldAnimate = true;
             });
-
-            viewer.clock.shouldAnimate = true;
         })
     }
 }

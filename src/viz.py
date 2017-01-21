@@ -60,7 +60,6 @@ def point_pkt(pos):
 
 @app.route("/mc<int:num>")
 def monte_carlo_data(num):
-
     p = models[num]
     tof = np.ceil(p.timeOfFlight())
     time = np.arange(0, tof, 0.1)
@@ -119,7 +118,6 @@ def monte_carlo_data(num):
 
     session['doc'] = doc
     session['num'] = num
-    # session['plots'] = p.plots
 
     class Msg():
 
@@ -140,22 +138,17 @@ def handle_loadCesiumData():
     emit('loadCesiumData', doc.dumps())
 
 
-@socketio.on('getPlotData')
-def handle_getPlotData(plot):
-    num = session.get('num', None)
-    p = models[num]
-    plot = p.plots[plot]
-    plot = json.dumps(plot, cls=plutils.PlotlyJSONEncoder)
-    emit('recvPlotData', plot)
-
-
 @socketio.on('loadPlots')
 def handle_loadPlots():
     num = session.get('num', None)
+
     p = models[num]
-    plots = [{'title': plot['title'], 'div': plot['div']}
-             for k, plot in p.plots.iteritems()]
-    emit('loadPlots', json.dumps({'options': plots, 'div': 'plot0'}))
+    options = [{'title': plot['title'], 'div': plot['div']}
+               for k, plot in p.plots.iteritems()]
+    data = [json.dumps({'div': plot['div'], 'data': plot['data'], 'layout': plot['layout'],
+                        'config': plot['config']}, cls=plutils.PlotlyJSONEncoder)
+            for k, plot in p.plots.iteritems()]
+    emit('loadPlots', json.dumps({'options': options, 'div': 'plot0', 'data': data}))
 
 
 @socketio.on('loadMessageData')
