@@ -1,15 +1,15 @@
 <template>
   <div id="messages">
-    <el-select v-model="value" placeholder="Select">
-    <el-option
-      v-for="item in options"
-      :label="item.label"
-      :value="item.value">
-    </el-option>
-  </el-select>
+      <el-select v-model="value" placeholder="Select">
+          <el-option
+              v-for="item in options"
+              :label="item.label"
+              :value="item.value">
+          </el-option>
+      </el-select>
 
-  <div v-if="value == 'Option1'"><messagetable></messagetable></div>
-  <div v-else-if="value == 'Option2'">option2</div>
+      <messagetable v-for="item in options" v-show="value == item.value" :tabledata="item.tabledata">
+      </messagetable>
   </div>
 </template>
 
@@ -21,19 +21,26 @@ export default {
         return {
             options: [{
                 value: 'Option1',
-                label: 'Option1'
-            }, {
-                value: 'Option2',
-                label: 'Option2'
-            }, {
-                value: 'Option3',
-                label: 'Option3'
-            }, {
-                value: 'Option4',
-                label: 'Option4'
-            }, {
-                value: 'Option5',
-                label: 'Option5'
+                label: 'Option1',
+                tabledata: {
+                    columns: [{
+                        prop: 'date',
+                        label: 'Date',
+                        width: 180
+                    }, {
+                        prop: 'name',
+                        label: 'Name',
+                        width: 180
+                    }, {
+                        prop: 'address',
+                        label: 'Address',
+                    }],
+                    data: [{
+                        date: '2016-05-03',
+                        name: 'Tom',
+                        address: 'No. 189, Grove St, Los Angeles'
+                    }]
+                }
             }],
             value: 'Option1'
         }
@@ -45,7 +52,7 @@ export default {
 </script>
 
 <style>
-  #messages {
-  height: 25em;
-  }
+#messages {
+    height: 30em;
+}
 </style>

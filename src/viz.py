@@ -60,6 +60,11 @@ def point_pkt(pos):
 
 @app.route("/mc<int:num>")
 def monte_carlo_data(num):
+    snum = session.get('num', -1)
+
+    if snum == num:
+        return render_template('viz2.html')
+
     p = models[num]
     tof = np.ceil(p.timeOfFlight())
     time = np.arange(0, tof, 0.1)
@@ -129,6 +134,7 @@ def monte_carlo_data(num):
     timeline = itertools.starmap(Msg, zip(range(1, 101), ['ABC']*100,
                                           ['A really long string that you need to scroll for.']*100))
 
+    models[num] = p
     return render_template('viz2.html')
 
 

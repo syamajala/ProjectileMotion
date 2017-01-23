@@ -1,15 +1,15 @@
 <template>
-  <div id="plots">
-  <el-select v-model="div" placeholder="Select">
-    <el-option
-      v-for="item in options"
-      :label="item.title"
-      :value="item.div">
-    </el-option>
-  </el-select>
+    <div class="plots">
+        <el-select v-model="div" placeholder="Select">
+            <el-option
+                v-for="item in options"
+                :label="item.title"
+                :value="item.div">
+            </el-option>
+        </el-select>
 
-  <div v-for="item in options" v-show="div == item.div" :id="item.div" class="plot"></div>
-  </div>
+        <div v-for="item in options" v-show="div == item.div" :id="item.div" class="plots"></div>
+    </div>
 </template>
 
 <script>
@@ -48,11 +48,7 @@ export default {
 </script>
 
 <style>
-#plots {
-    height: 25em;
-}
-
-.plot {
-    height: 25em;
+.plots {
+    height: 30em;
 }
 </style>
