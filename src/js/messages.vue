@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import messagetable from './messageTable.vue'
+import messagetable from 'messageTable.vue'
 
 export default {
     data() {

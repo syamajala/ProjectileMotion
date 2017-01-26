@@ -1,5 +1,5 @@
 import Vue from 'vue'
-var io = require('../node_modules/socket.io-client/dist/socket.io.min.js');
+var io = require('socket.io-client/dist/socket.io.min.js');
 
 var bus = new Vue();
 export default bus
@@ -19,6 +19,7 @@ socket.on('connect', function() {
 
     reload = true;
     socket.emit('loadCesiumData');
+    socket.emit('loadPlots');
 });
 
 socket.on('loadCesiumData', function(data) {
@@ -26,11 +27,7 @@ socket.on('loadCesiumData', function(data) {
     bus.$emit('loadCesiumData', data);
 });
 
-bus.$on('loadPlots', function() {
-    socket.emit('loadPlots');
-});
-
 socket.on('loadPlots', function(data) {
     data = JSON.parse(data);
-    bus.$emit('loadPlotData', data);
+    bus.$emit('loadPlots', data);
 })

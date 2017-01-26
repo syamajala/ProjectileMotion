@@ -14,9 +14,9 @@
 </template>
 
 <script>
-import cesium from './cesium.vue'
-import plots from './plots.vue'
-import messages from './messages.vue'
+import cesium from 'cesium.vue'
+import plots from 'plots.vue'
+import messages from 'messages.vue'
 
 export default {
     data()

@@ -18,14 +18,12 @@ import bus from './bus.js'
 export default {
     created() {
         var self = this;
-        bus.$on('loadPlotData', function(data) {
+        bus.$on('loadPlots', function(data) {
             self.options = data['options'];
             self.div = data['div'];
             self.plots = data['data']
             self.build_plots = true;
         })
-
-        bus.$emit('loadPlots')
     },
 
     data() {
@@ -33,7 +31,7 @@ export default {
     },
 
     updated() {
-        var Plotly = require('../node_modules/plotly.js/dist/plotly.min.js')
+        var Plotly = require('plotly.js/dist/plotly.min.js')
         if(this.build_plots) {
             for(var i = 0; i < this.plots.length; i++)
             {

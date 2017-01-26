@@ -7,15 +7,15 @@
 </template>
 
 <script>
-require('../node_modules/cesium/Build/Cesium/Cesium.js');
-require('../node_modules/cesium/Build/Cesium/Widgets/widgets.css');
-import bus from './bus.js'
+require('cesium/Build/Cesium/Cesium.js');
+require('cesium/Build/Cesium/Widgets/widgets.css');
+import bus from 'bus.js'
 
 export default {
 
     mounted()
     {
-        var dat = require('../node_modules/dat.gui/build/dat.gui.min.js');
+        var dat = require('dat.gui/build/dat.gui.min.js');
 
         window.CESIUM_BASE_URL = './js/Cesium'
         var Cesium = window.Cesium;
