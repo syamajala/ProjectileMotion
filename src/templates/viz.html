@@ -6,82 +6,19 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
 
         <title>Hello World!</title>
-        <link rel="stylesheet" type="text/css" href="/css/columns.css">
-        <link rel="stylesheet" type="text/css" href="/css/table.css">
-        <link rel="stylesheet" type="text/css" href="/css/graph.css">
-        <link rel="stylesheet" type="text/css" href="/css/menu.css">
-        <script src="/js/plotly.js/dist/plotly.min.js"></script>
+        <style>
+         html, body {
+             height: 100%;
+             width: 100%;
+             margin: 0;
+             padding: 0;
+             overflow: hidden;
+         }
+        </style>
     </head>
     <body>
-
-        <div class="column column-7">
-            {#
-            <div class="row" style="height: 93%">
-                <div id="cesium" class="tabcontent" style="height: 100%">
-                    #}
-                    <div id="cesiumContainer" style="height: 100%"></div>
-                    <div id="toolbar"></div>
-                    {#
-                </div>
-
-                <div id="plots" class="tabcontent"></div>
-            </div>
-
-            <div class="row">
-                <ul class="tab">
-                    <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'cesium')" id="defaultOpen">Cesium</a></li>
-                    <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'plots')">Plots</a></li>
-                </ul>
-            </div>
-            #}
-        </div>
-
-        <div class="column column-5">
-            <div class="row" style="height: 50%">
-                <select class="default" id="plot_select" name="plot">
-                    {% for id, plot in plots.items() %}
-                    <option value={{ id|e }} {% if id == "plot0" %} selected {% endif %}>
-                        {{ plot.title|e }}
-                    </option>
-                    {% endfor %}
-                </select>
-                {% for id, plot in plots.items() %}
-                {{ plot.div|safe }}
-                {% endfor %}
-            </div>
-
-          <div class="row" style="height: 45%; margin-top:1em;">
-              <select class="default" id="message_data_select" name="messages">
-                  <option value="messageData0" selected>Table</option>
-                  <option value="messageData1">Graph</option>
-              </select>
-
-              <div id="messageData0" class="tableContainer" style="visibility: visible; height: 98%">
-                  <table class="scrollTable">
-                      <thead class="fixedHeader">
-                          <tr>
-                              <th>Time</th>
-                              <th>Event</th>
-                              <th>Fields</th>
-                          </tr>
-                      </thead>
-                      <tbody class="scrollContent">
-                          {% for msg in timeline %}
-                          <tr>
-                              <td>{{ msg.time }}</td>
-                              <td>{{ msg.event }}</td>
-                              <td>{{ msg.fields }}</td>
-                          </tr>
-                          {% endfor %}
-                      </tbody>
-              </table>
-              </div>
-
-              <div id="messageData1" class="graph" style="visibility: hidden;"></div>
-          </div>
-
-        </div>
-
-        <script src="/js/bundle.js"></script>
-	</body>
+        <div id="app"></div>
+        <script src="/js/cesium.js"></script>
+        <script src="/js/app.js"></script>
+    </body>
 </html>

@@ -67,6 +67,7 @@ def monte_carlo_data(num):
 
     p = models[num]
     tof = np.ceil(p.timeOfFlight())
+    session['tof'] = tof
     time = np.arange(0, tof, 0.1)
     x, y = p.pos(time)
     y = (20925646.3255*.3048) + y
@@ -135,7 +136,7 @@ def monte_carlo_data(num):
                                           ['A really long string that you need to scroll for.']*100))
 
     models[num] = p
-    return render_template('viz2.html')
+    return render_template('viz.html')
 
 
 @socketio.on('loadCesiumData')

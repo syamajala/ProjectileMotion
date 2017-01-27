@@ -3,11 +3,14 @@ var webpack = require('webpack')
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
-  entry: './js/main.js',
+  entry: {
+    app: 'main.js',
+    cesium: ['cesium/Build/Cesium/Cesium.js', 'dat.gui/build/dat.gui.min.js'],
+  },
   output: {
     path: path.resolve(__dirname, './static/js'),
     publicPath: '/js/',
-    filename: 'app.js'
+    filename: '[name].js'
   },
   module: {
     loaders: [
@@ -51,7 +54,14 @@ module.exports = {
     noInfo: true
   },
   devtool: '#eval-source-map',
-  watch: true
+  watch: true,
+  plugins: [
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'cesium',
+      minChunks: Infinity,
+      chunks: ["app"]
+    })
+  ]
 }
 
 if (process.env.NODE_ENV === 'production') {
