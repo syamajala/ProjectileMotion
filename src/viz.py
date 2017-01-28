@@ -63,7 +63,7 @@ def monte_carlo_data(num):
     snum = session.get('num', -1)
 
     if snum == num:
-        return render_template('viz2.html')
+        return render_template('viz.html')
 
     p = models[num]
     tof = np.ceil(p.timeOfFlight())

@@ -5,7 +5,9 @@ var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlug
 module.exports = {
   entry: {
     app: 'main.js',
-    cesium: ['cesium/Build/Cesium/Cesium.js', 'dat.gui/build/dat.gui.min.js'],
+    libs: ['vue/dist/vue.common.js', 'element-ui/lib/element-ui.common.js',
+           'socket.io-client/dist/socket.io.min.js', 'plotly.js/dist/plotly.min.js'],
+    cesium: ['cesium/Build/Cesium/Cesium.js', 'dat.gui/build/dat.gui.min.js']
   },
   output: {
     path: path.resolve(__dirname, './static/js'),
@@ -57,10 +59,15 @@ module.exports = {
   watch: true,
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
+      name: 'libs',
+      minChunks: Infinity,
+      chunks: ["app", "cesium"]
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
       name: 'cesium',
       minChunks: Infinity,
       chunks: ["app"]
-    })
+    }),
   ]
 }
 
