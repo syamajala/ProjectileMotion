@@ -60,6 +60,7 @@ def point_pkt(pos):
 
 @app.route("/mc<int:num>")
 def monte_carlo_data(num):
+    print "Loading MC%d." % num
     snum = session.get('num', -1)
 
     if snum == num:
@@ -125,28 +126,20 @@ def monte_carlo_data(num):
     session['doc'] = doc
     session['num'] = num
 
-    class Msg():
-
-        def __init__(self, time, event, fields):
-            self.time = time
-            self.event = event
-            self.fields = fields
-
-    timeline = itertools.starmap(Msg, zip(range(1, 101), ['ABC']*100,
-                                          ['A really long string that you need to scroll for.']*100))
-
     models[num] = p
     return render_template('viz.html')
 
 
 @socketio.on('loadCesiumData')
 def handle_loadCesiumData():
+    print "Serving cesium packets."
     doc = session.get('doc', None)
     emit('loadCesiumData', doc.dumps())
 
 
 @socketio.on('loadPlots')
 def handle_loadPlots():
+    print "Serving plots."
     num = session.get('num', None)
 
     p = models[num]
@@ -156,15 +149,6 @@ def handle_loadPlots():
                         'config': plot['config']}, cls=plutils.PlotlyJSONEncoder)
             for k, plot in p.plots.iteritems()]
     emit('loadPlots', json.dumps({'options': options, 'div': 'plot0', 'data': data}))
-
-
-@socketio.on('loadMessageData')
-def handle_loadMessageData():
-
-    msgData = [{"id": 0, "name": "MT-230", "from": "CND", "to": "WCS", "time": 3.0},
-               {"id": 1, "name": "MT-071", "from": "WCS", "to": "CND", "time": 5.0}]
-
-    emit('loadMessageData', json.dumps(msgData))
 
 
 if __name__ == '__main__':

@@ -53,6 +53,6 @@ export default {
 
 <style>
 #messages {
-    height: 30em;
+    height: 50vh;
 }
 </style>

@@ -87,9 +87,14 @@ export default {
 </script>
 
 <style>
+#cesium {
+    width: 100%;
+    height: 100%;
+}
+
 #cesiumContainer {
     width: 100%;
-    height: 54em;
+    height: 95vh;
     margin: 0;
     padding: 0;
     overflow: hidden;

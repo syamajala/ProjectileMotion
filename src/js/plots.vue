@@ -47,6 +47,7 @@ export default {
 
 <style>
 .plots {
-    height: 30em;
+    height: 50vh;
+    margin-bottom: 3em;
 }
 </style>
