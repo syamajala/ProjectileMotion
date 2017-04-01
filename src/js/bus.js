@@ -19,7 +19,7 @@ socket.on('connect', function() {
 
     reload = true;
     socket.emit('loadCesiumData');
-    socket.emit('loadPlots');
+    socket.emit('loadDropdownPlots');
 });
 
 socket.on('loadCesiumData', function(data) {
@@ -27,7 +27,12 @@ socket.on('loadCesiumData', function(data) {
     bus.$emit('loadCesiumData', data);
 });
 
-socket.on('loadPlots', function(data) {
+socket.on('loadDropdownPlots', function(data) {
     data = JSON.parse(data);
-    bus.$emit('loadPlots', data);
+    bus.$emit('loadDropdownPlots', data);
+})
+
+socket.on('loadTabPlots', function(data) {
+    data = JSON.parse(data);
+    bus.$emit('loadTabPlots', data);
 })

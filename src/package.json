@@ -24,8 +24,10 @@
     "dat.gui": "^0.6.1",
     "element-ui": "^1.1.2",
     "plotly.js": "^1.21.2",
+    "pouchdb": "^6.1.2",
     "socket.io-client": "^1.7.2",
-    "vue": "^2.1.8"
+    "vue": "^2.1.8",
+    "vue-infinite-scroll": "^2.0.0"
   },
   "devDependencies": {
     "vuex": "^2.1.1",

@@ -1,23 +1,35 @@
 <template>
   <div id="app">
-    <el-tabs v-model="activeName">
-      <el-tab-pane label="Plots" name="first"></el-tab-pane>
-    </el-tabs>
-
+      <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10">
+          hi
+      </div>
   </div>
 </template>
 
 <script>
 export default {
+
     data()
     {
         return {
-            activeName: 'first'
+            activeName: 'first',
+            data: [],
+            busy: false,
+            count: 0
         }
     },
-    components: {
-        plots,
-        messages
+
+    methods: {
+        loadMore: function() {
+            this.busy = true;
+
+            setTimeout(() => {
+                for (var i = 0, j = 10; i < j; i++) {
+                    this.data.push({ name: this.count++ });
+                }
+                this.busy = false;
+            }, 1000);
+        }
     }
 }
 </script>

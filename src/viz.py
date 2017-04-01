@@ -137,9 +137,9 @@ def handle_loadCesiumData():
     emit('loadCesiumData', doc.dumps())
 
 
-@socketio.on('loadPlots')
-def handle_loadPlots():
-    print "Serving plots."
+@socketio.on('loadDropdownPlots')
+def handle_loadDropdownPlots():
+    print "Serving dropdown plots."
     num = session.get('num', None)
 
     p = models[num]
@@ -148,7 +148,20 @@ def handle_loadPlots():
     data = [json.dumps({'div': plot['div'], 'data': plot['data'], 'layout': plot['layout'],
                         'config': plot['config']}, cls=plutils.PlotlyJSONEncoder)
             for k, plot in p.plots.iteritems()]
-    emit('loadPlots', json.dumps({'options': options, 'div': 'plot0', 'data': data}))
+    emit('loadDropdownPlots', json.dumps({'options': options, 'div': 'plot0', 'data': data}))
+
+
+@socketio.on('loadTabPlots')
+def handle_loadTabPlots():
+    print "Serving tab plots."
+    num = session.get('num', None)
+
+    p = models[num]
+    options = [{'div': plot['div']} for k, plot in p.tab_plots.iteritems()]
+    data = [json.dumps({'div': plot['div'], 'data': plot['data'], 'layout': plot['layout'],
+                        'config': plot['config']}, cls=plutils.PlotlyJSONEncoder)
+            for k, plot in p.plots.iteritems()]
+    emit('loadTabPlots', json.dumps({'options': options, 'div': 'plot0', 'data': data}))
 
 
 if __name__ == '__main__':
