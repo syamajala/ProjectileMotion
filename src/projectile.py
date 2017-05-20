@@ -7,16 +7,15 @@ import plotly.graph_objs as go
 G = 9.8
 
 
-class Plot():
+class DropdownPlot():
 
     pid = 0
 
-    def __init__(self, title, x, y, z=None,
+    def __init__(self, pid, title, x, y, z=None,
                  xaxis_label="", yaxis_label="", zaxis_label="", color=""):
 
         self.title = title
-        self.plot_id = 'plot%d' % Plot.pid
-        Plot.pid += 1
+        self.plot_id = 'plot%d' % pid
 
         layout = go.Layout(title=title,
                            xaxis={'title': xaxis_label},
@@ -32,8 +31,7 @@ class Plot():
 
         config = {'show_link': False}
 
-        self.plot = {'title': title, 'div': self.plot_id,
-                     'data': [line], 'layout': layout, 'config': config}
+        self.plot = {'title': title, 'div': self.plot_id, 'data': [line], 'layout': layout, 'config': config}
 
 
 class Projectile():
@@ -50,7 +48,7 @@ class Projectile():
 
         self.color = cl.scales['12']['qual']['Set3'][0]
 
-        self.plots = collections.OrderedDict()
+        self.dropdown_plots = collections.OrderedDict()
 
     def pos(self, t):
 
@@ -85,8 +83,8 @@ class Projectile():
 
         return (self.h, self.toh)
 
-    def make_plot(self, title, x, y, z=None, xaxis_label="", yaxis_label="", zaxis_label=""):
+    def make_dropdown_plot(self, title, x, y, z=None, xaxis_label="", yaxis_label="", zaxis_label=""):
         p = Plot(title, x, y, z=z,
                  xaxis_label=xaxis_label, yaxis_label=yaxis_label, zaxis_label=zaxis_label,
                  color=self.color)
-        self.plots[p.plot_id] = p.plot
+        self.dropdown_plots[p.plot_id] = p.plot
