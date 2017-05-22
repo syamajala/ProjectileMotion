@@ -100,6 +100,7 @@
               :range-state="rangeState"
               :disabled-date="disabledDate"
               @changerange="handleChangeRange"
+              :first-day-of-week="firstDayOfWeek"
               @pick="handleRangePick">
             </date-table>
           </div>
@@ -125,7 +126,9 @@
               :range-state="rangeState"
               :disabled-date="disabledDate"
               @changerange="handleChangeRange"
-              @pick="handleRangePick"></date-table>
+              :first-day-of-week="firstDayOfWeek"
+              @pick="handleRangePick">
+            </date-table>
           </div>
         </div>
       </div>
@@ -232,6 +235,7 @@
         value: '',
         visible: '',
         disabledDate: '',
+        firstDayOfWeek: 7,
         minTimePickerVisible: false,
         maxTimePickerVisible: false,
         width: 0
@@ -308,8 +312,7 @@
           const target = new Date(type === 'min' ? this.minDate : this.maxDate);
           if (target) {
             target.setFullYear(parsedValue.getFullYear());
-            target.setMonth(parsedValue.getMonth());
-            target.setDate(parsedValue.getDate());
+            target.setMonth(parsedValue.getMonth(), parsedValue.getDate());
           }
         }
       },
@@ -327,8 +330,7 @@
           const target = new Date(type === 'min' ? this.minDate : this.maxDate);
           if (target) {
             target.setFullYear(parsedValue.getFullYear());
-            target.setMonth(parsedValue.getMonth());
-            target.setDate(parsedValue.getDate());
+            target.setMonth(parsedValue.getMonth(), parsedValue.getDate());
           }
           if (type === 'min') {
             if (target < this.maxDate) {
@@ -373,9 +375,9 @@
         if (this.maxDate === val.maxDate && this.minDate === val.minDate) {
           return;
         }
+        this.onPick && this.onPick(val);
         this.maxDate = val.maxDate;
         this.minDate = val.minDate;
-
         if (!close || this.showTime) return;
         this.handleConfirm();
       },

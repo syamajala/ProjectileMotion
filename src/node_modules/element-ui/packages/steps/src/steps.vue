@@ -1,19 +1,24 @@
 <template>
-  <div class="el-steps" :class="['is-' + direction]"><slot></slot></div>
+  <div
+    class="el-steps"
+    :class="['is-' + direction, center ? 'is-center' : '']">
+    <slot></slot>
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'el-steps',
+  name: 'ElSteps',
 
   props: {
-    space: Number,
+    space: [Number, String],
     active: Number,
     direction: {
       type: String,
       default: 'horizontal'
     },
     alignCenter: Boolean,
+    center: Boolean,
     finishStatus: {
       type: String,
       default: 'finish'
@@ -26,20 +31,21 @@ export default {
 
   data() {
     return {
-      steps: []
+      steps: [],
+      stepOffset: 0
     };
   },
 
   watch: {
     active(newVal, oldVal) {
       this.$emit('change', newVal, oldVal);
-    }
-  },
+    },
 
-  mounted() {
-    this.steps.forEach((child, index) => {
-      child.index = index;
-    });
+    steps(steps) {
+      steps.forEach((child, index) => {
+        child.index = index;
+      });
+    }
   }
 };
 </script>

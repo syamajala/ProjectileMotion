@@ -14,6 +14,7 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 
+var arraysToCalcdata = require('../bar/arrays_to_calcdata');
 var binFunctions = require('./bin_functions');
 var normFunctions = require('./norm_functions');
 var doAvg = require('./average');
@@ -33,22 +34,38 @@ module.exports = function calc(gd, trace) {
             trace.orientation === 'h' ? (trace.yaxis || 'y') : (trace.xaxis || 'x')),
         maindata = trace.orientation === 'h' ? 'y' : 'x',
         counterdata = {x: 'y', y: 'x'}[maindata],
-        calendar = trace[maindata + 'calendar'];
+        calendar = trace[maindata + 'calendar'],
+        cumulativeSpec = trace.cumulative;
 
     cleanBins(trace, pa, maindata);
 
     // prepare the raw data
     var pos0 = pa.makeCalcdata(trace, maindata);
-    // calculate the bins
-    if((trace['autobin' + maindata] !== false) || !(maindata + 'bins' in trace)) {
-        trace[maindata + 'bins'] = Axes.autoBin(pos0, pa, trace['nbins' + maindata], false, calendar);
 
-        // copy bin info back to the source data.
-        trace._input[maindata + 'bins'] = trace[maindata + 'bins'];
+    // calculate the bins
+    var binAttr = maindata + 'bins',
+        binspec;
+    if((trace['autobin' + maindata] !== false) || !(binAttr in trace)) {
+        binspec = Axes.autoBin(pos0, pa, trace['nbins' + maindata], false, calendar);
+
+        // adjust for CDF edge cases
+        if(cumulativeSpec.enabled && (cumulativeSpec.currentbin !== 'include')) {
+            if(cumulativeSpec.direction === 'decreasing') {
+                binspec.start = pa.c2r(pa.r2c(binspec.start) - binspec.size);
+            }
+            else {
+                binspec.end = pa.c2r(pa.r2c(binspec.end) + binspec.size);
+            }
+        }
+
+        // copy bin info back to the source and full data.
+        trace._input[binAttr] = trace[binAttr] = binspec;
+    }
+    else {
+        binspec = trace[binAttr];
     }
 
-    var binspec = trace[maindata + 'bins'],
-        nonuniformBins = typeof binspec.size === 'string',
+    var nonuniformBins = typeof binspec.size === 'string',
         bins = nonuniformBins ? [] : binspec,
         // make the empty bin array
         i2,
@@ -59,8 +76,16 @@ module.exports = function calc(gd, trace) {
         total = 0,
         norm = trace.histnorm,
         func = trace.histfunc,
-        densitynorm = norm.indexOf('density') !== -1,
-        extremefunc = func === 'max' || func === 'min',
+        densitynorm = norm.indexOf('density') !== -1;
+
+    if(cumulativeSpec.enabled && densitynorm) {
+        // we treat "cumulative" like it means "integral" if you use a density norm,
+        // which in the end means it's the same as without "density"
+        norm = norm.replace(/ ?density$/, '');
+        densitynorm = false;
+    }
+
+    var extremefunc = func === 'max' || func === 'min',
         sizeinit = extremefunc ? null : 0,
         binfunc = binFunctions.count,
         normfunc = normFunctions[norm],
@@ -115,6 +140,10 @@ module.exports = function calc(gd, trace) {
     if(doavg) total = doAvg(size, counts);
     if(normfunc) normfunc(size, total, inc);
 
+    // after all normalization etc, now we can accumulate if desired
+    if(cumulativeSpec.enabled) cdf(size, cumulativeSpec.direction, cumulativeSpec.currentbin);
+
+
     var serieslen = Math.min(pos.length, size.length),
         cd = [],
         firstNonzero = 0,
@@ -140,5 +169,61 @@ module.exports = function calc(gd, trace) {
         }
     }
 
+    arraysToCalcdata(cd, trace);
+
     return cd;
 };
+
+function cdf(size, direction, currentbin) {
+    var i,
+        vi,
+        prevSum;
+
+    function firstHalfPoint(i) {
+        prevSum = size[i];
+        size[i] /= 2;
+    }
+
+    function nextHalfPoint(i) {
+        vi = size[i];
+        size[i] = prevSum + vi / 2;
+        prevSum += vi;
+    }
+
+    if(currentbin === 'half') {
+
+        if(direction === 'increasing') {
+            firstHalfPoint(0);
+            for(i = 1; i < size.length; i++) {
+                nextHalfPoint(i);
+            }
+        }
+        else {
+            firstHalfPoint(size.length - 1);
+            for(i = size.length - 2; i >= 0; i--) {
+                nextHalfPoint(i);
+            }
+        }
+    }
+    else if(direction === 'increasing') {
+        for(i = 1; i < size.length; i++) {
+            size[i] += size[i - 1];
+        }
+
+        // 'exclude' is identical to 'include' just shifted one bin over
+        if(currentbin === 'exclude') {
+            size.unshift(0);
+            size.pop();
+        }
+    }
+    else {
+        for(i = size.length - 2; i >= 0; i--) {
+            size[i] += size[i + 1];
+        }
+
+        if(currentbin === 'exclude') {
+            size.push(0);
+            size.shift();
+        }
+    }
+}

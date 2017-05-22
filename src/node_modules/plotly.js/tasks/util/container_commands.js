@@ -22,8 +22,6 @@ containerCommands.setup = [
     containerCommands.injectEnv,
     containerCommands.restart,
     'sleep 1',
-    containerCommands.ping,
-    'echo '
 ].join(' && ');
 
 containerCommands.dockerRun = [
@@ -31,7 +29,7 @@ containerCommands.dockerRun = [
     '--name', constants.testContainerName,
     '-v', constants.pathToRoot + ':' + constants.testContainerHome,
     '-p', constants.testContainerPort + ':' + constants.testContainerPort,
-    'plotly/testbed:latest'
+    constants.testContainerImage
 ].join(' ');
 
 containerCommands.getRunCmd = function(isCI, commands) {

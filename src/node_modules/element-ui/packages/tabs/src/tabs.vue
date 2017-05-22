@@ -1,21 +1,26 @@
 <script>
-  module.exports = {
-    name: 'el-tabs',
+  import TabNav from './tab-nav';
+
+  export default {
+    name: 'ElTabs',
+
+    components: {
+      TabNav
+    },
 
     props: {
       type: String,
       activeName: String,
-      closable: {
-        type: Boolean,
-        default: false
-      },
-      value: {}
+      closable: Boolean,
+      addable: Boolean,
+      value: {},
+      editable: Boolean
     },
 
     data() {
       return {
-        children: null,
-        currentName: this.value || this.activeName
+        currentName: this.value || this.activeName,
+        panes: []
       };
     },
 
@@ -25,131 +30,83 @@
       },
       value(value) {
         this.setCurrentName(value);
-      }
-    },
-
-    computed: {
-      currentTab() {
-        if (!this.$children) return;
-        let result;
-        this.$children.forEach(tab => {
-          if (this.currentName === (tab.name || tab.index)) {
-            result = tab;
-          }
-        });
-        return result;
+      },
+      currentName(value) {
+        if (this.$refs.nav) {
+          this.$nextTick(_ => {
+            this.$refs.nav.scrollToActiveTab();
+          });
+        }
       }
     },
 
     methods: {
-      handleTabRemove(tab, event) {
-        event.stopPropagation();
-        const tabs = this.$children;
-        const currentTab = this.currentTab;
-
-        let index = tabs.indexOf(tab);
-        tab.$destroy();
-
-        this.$emit('tab-remove', tab);
-        this.$forceUpdate();
-
-        this.$nextTick(_ => {
-          if (tab.active) {
-            let nextChild = tabs[index];
-            let prevChild = tabs[index - 1];
-            let nextActiveTab = nextChild || prevChild || null;
-
-            if (nextActiveTab) {
-              this.setCurrentName(nextActiveTab.name || nextActiveTab.index);
-            }
-            return;
-          } else {
-            this.setCurrentName(currentTab.name || currentTab.index);
-          }
-        });
-      },
       handleTabClick(tab, tabName, event) {
         if (tab.disabled) return;
         this.setCurrentName(tabName);
         this.$emit('tab-click', tab, event);
       },
+      handleTabRemove(pane, ev) {
+        if (pane.disabled) return;
+        ev.stopPropagation();
+        this.$emit('edit', pane.name, 'remove');
+        this.$emit('tab-remove', pane.name);
+      },
+      handleTabAdd() {
+        this.$emit('edit', null, 'add');
+        this.$emit('tab-add');
+      },
       setCurrentName(value) {
         this.currentName = value;
         this.$emit('input', value);
+      },
+      addPanes(item) {
+        const index = this.$slots.default.indexOf(item.$vnode);
+        this.panes.splice(index, 0, item);
+      },
+      removePanes(item) {
+        const panes = this.panes;
+        const index = panes.indexOf(item);
+        if (index > -1) {
+          panes.splice(index, 1);
+        }
       }
-    },
-    mounted() {
-      this.$forceUpdate();
     },
     render(h) {
       let {
         type,
-        handleTabRemove,
         handleTabClick,
-        currentName
+        handleTabRemove,
+        handleTabAdd,
+        currentName,
+        panes,
+        editable,
+        addable
       } = this;
 
-      const getBarStyle = () => {
-        if (this.type || !this.$refs.tabs) return {};
-        let style = {};
-        let offset = 0;
-        let tabWidth = 0;
+      const newButton = editable || addable
+        ? (
+            <span
+              class="el-tabs__new-tab"
+              on-click={ handleTabAdd }
+            >
+                <i class="el-icon-plus"></i>
+            </span>
+          )
+        : null;
 
-        this.$children.every((tab, index) => {
-          let $el = this.$refs.tabs[index];
-          if (!$el) { return false; }
-
-          if (!tab.active) {
-            offset += $el.clientWidth;
-            return true;
-          } else {
-            tabWidth = $el.clientWidth;
-            return false;
-          }
-        });
-
-        style.width = tabWidth + 'px';
-        style.transform = `translateX(${offset}px)`;
-
-        return style;
+      const navData = {
+        props: {
+          currentName,
+          onTabClick: handleTabClick,
+          onTabRemove: handleTabRemove,
+          editable,
+          type,
+          panes
+        },
+        ref: 'nav'
       };
 
-      const tabs = this.$children.map((tab, index) => {
-        let tabName = tab.name || tab.index || index;
-        if (currentName === undefined && index === 0) {
-          this.setCurrentName(tabName);
-        }
-
-        tab.index = index;
-
-        const activeBar = !type && index === 0
-          ? <div class="el-tabs__active-bar" style={getBarStyle()}></div>
-          : null;
-
-        const btnClose = tab.isClosable
-          ? <span class="el-icon-close" on-click={(ev) => { handleTabRemove(tab, ev); }}></span>
-          : null;
-
-        const tabLabelContent = tab.$slots.label || tab.label;
-
-        return (
-          <div
-            class={{
-              'el-tabs__item': true,
-              'is-active': tab.active,
-              'is-disabled': tab.disabled,
-              'is-closable': tab.isClosable
-            }}
-            ref="tabs"
-            refInFor
-            on-click={(ev) => { handleTabClick(tab, tabName, ev); }}
-          >
-            {tabLabelContent}
-            {btnClose}
-            {activeBar}
-          </div>
-        );
-      });
       return (
         <div class={{
           'el-tabs': true,
@@ -157,13 +114,19 @@
           'el-tabs--border-card': type === 'border-card'
         }}>
           <div class="el-tabs__header">
-            {tabs}
+            {newButton}
+            <tab-nav { ...navData }></tab-nav>
           </div>
           <div class="el-tabs__content">
             {this.$slots.default}
           </div>
         </div>
       );
+    },
+    created() {
+      if (!this.currentName) {
+        this.setCurrentName('0');
+      }
     }
   };
 </script>

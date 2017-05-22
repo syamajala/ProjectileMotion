@@ -12,7 +12,7 @@
     props: {
       accordion: Boolean,
       value: {
-        type: [Array, String],
+        type: [Array, String, Number],
         default() {
           return [];
         }
@@ -42,7 +42,7 @@
       handleItemClick(item) {
         if (this.accordion) {
           this.setActiveNames(
-            this.activeNames[0] &&
+            (this.activeNames[0] || this.activeNames[0] === 0) &&
             this.activeNames[0] === item.name
             ? '' : item.name
           );

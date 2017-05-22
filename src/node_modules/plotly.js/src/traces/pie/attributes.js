@@ -79,7 +79,27 @@ module.exports = {
 
     text: {
         valType: 'data_array',
-        description: 'Sets text elements associated with each sector.'
+        description: [
+            'Sets text elements associated with each sector.',
+            'If trace `textinfo` contains a *text* flag, these elements will seen',
+            'on the chart.',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
+        ].join(' ')
+    },
+    hovertext: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        description: [
+            'Sets hover text elements associated with each sector.',
+            'If a single string, the same string appears for',
+            'all data points.',
+            'If an array of string, the items are mapped in order of',
+            'this trace\'s sectors.',
+            'To be seen, trace `hoverinfo` must contain a *text* flag.'
+        ].join(' ')
     },
 
 // 'see eg:'
@@ -178,7 +198,7 @@ module.exports = {
         role: 'style',
         dflt: true,
         description: [
-            'Determines whether or not the sectors of reordered',
+            'Determines whether or not the sectors are reordered',
             'from largest to smallest.'
         ].join(' ')
     },

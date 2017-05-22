@@ -1,5 +1,5 @@
 import Vue from 'vue'
-var io = require('socket.io-client/dist/socket.io.min.js');
+var io = require('socket.io-client/dist/socket.io.js');
 
 var bus = new Vue();
 export default bus

@@ -11,12 +11,14 @@
 </template>
 <script>
   import Menu from './menu-mixin';
-  module.exports = {
+  import Emitter from 'element-ui/src/mixins/emitter';
+
+  export default {
     name: 'ElMenuItem',
 
     componentName: 'ElMenuItem',
 
-    mixins: [Menu],
+    mixins: [Menu, Emitter],
 
     props: {
       index: {
@@ -34,21 +36,22 @@
     },
     computed: {
       active() {
-        return this.index === this.rootMenu.activeIndex;
+        return this.index === this.rootMenu.activedIndex;
       }
     },
     methods: {
       handleClick() {
-        this.rootMenu.handleSelect(
-          this.index,
-          this.indexPath,
-          this.route || this.index,
-          this
-        );
+        this.dispatch('ElMenu', 'item-click', this);
+        this.$emit('click', this);
       }
     },
     created() {
-      this.rootMenu.menuItems[this.index] = this;
+      this.parentMenu.addItem(this);
+      this.rootMenu.addItem(this);
+    },
+    beforeDestroy() {
+      this.parentMenu.removeItem(this);
+      this.rootMenu.removeItem(this);
     }
   };
 </script>

@@ -6,16 +6,17 @@
       v-show="visible"
       :style="{ top: top ? top + 'px' : 'auto' }"
       @mouseenter="clearTimer()"
-      @mouseleave="startTimer()">
+      @mouseleave="startTimer()"
+      @click="click">
       <i
         class="el-notification__icon"
         :class="[ typeClass, iconClass ]"
         v-if="type || iconClass">
       </i>
       <div class="el-notification__group" :class="{ 'is-with-icon': typeClass || iconClass }">
-        <span>{{ title }}</span>
-        <p>{{ message }}</p>
-        <div class="el-notification__closeBtn el-icon-close" @click="close"></div>
+        <h2 class="el-notification__title" v-text="title"></h2>
+        <div class="el-notification__content"><slot>{{ message }}</slot></div>
+        <div class="el-notification__closeBtn el-icon-close" @click.stop="close"></div>
       </div>
     </div>
   </transition>
@@ -40,6 +41,7 @@
         customClass: '',
         iconClass: '',
         onClose: null,
+        onClick: null,
         closed: false,
         top: null,
         timer: null
@@ -66,6 +68,12 @@
         this.$el.removeEventListener('transitionend', this.destroyElement);
         this.$destroy(true);
         this.$el.parentNode.removeChild(this.$el);
+      },
+
+      click() {
+        if (typeof this.onClick === 'function') {
+          this.onClick();
+        }
       },
 
       close() {

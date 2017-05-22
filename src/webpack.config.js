@@ -1,63 +1,51 @@
-var path = require('path')
-var webpack = require('webpack')
+const resolve = require('path').resolve
+const webpack = require('webpack')
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const url = require('url')
 
-module.exports = {
+module.exports = (options = {}) => ({
   entry: {
-    home: 'home.js',
-    viz: 'viz.js',
+    home: './js/home.js',
+    viz: './js/viz.js',
     libs: ['vue/dist/vue.common.js', 'element-ui/lib/element-ui.common.js',
-           'socket.io-client/dist/socket.io.min.js', 'plotly.js/dist/plotly.min.js'],
+           'socket.io-client/dist/socket.io.js', 'plotly.js/dist/plotly.min.js'],
     cesium: ['cesium/Build/Cesium/Cesium.js', 'dat.gui/build/dat.gui.min.js']
   },
   output: {
-    path: path.resolve(__dirname, './static/js'),
-    publicPath: '/js/',
-    filename: '[name].js'
+    path: resolve(__dirname, './static/js'),
+    filename: '[name].js',
+    publicPath: '/js/'
   },
   module: {
-    loaders: [
-      {
+    rules: [{
         test: /\.vue$/,
-        loader: 'vue-loader'
+        use: ['vue-loader']
       },
       {
         test: /\.js$/,
-        loader: 'babel-loader',
+        use: ['babel-loader'],
         exclude: /node_modules/
       },
       {
-        test: /\.css$/,
-        loader: 'style-loader!css-loader'
-      },
-      {
-        test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
-        loader: 'file-loader'
-      },
-      {
-        test: /\.(png|jpe?g|gif|svg)(\?\S*)?$/,
-        loader: 'file-loader',
-        query: {
-          name: '[name].[ext]?[hash]'
-        }
-      },
-      { test: /Cesium\.js$/,
+        test: /Cesium\.js$/,
         loader: 'script-loader'
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader', 'postcss-loader']
+      },
+      {
+        test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 10000
+          }
+        }]
       }
     ]
   },
-  resolve: {
-    modules: [
-      path.resolve('./js'),
-      path.resolve('./node_modules')
-    ]
-  },
-  devServer: {
-    historyApiFallback: true,
-    noInfo: true
-  },
-  devtool: '#eval-source-map',
-  watch: true,
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
       name: 'libs',
@@ -69,23 +57,28 @@ module.exports = {
       minChunks: Infinity,
       chunks: ["viz"]
     }),
-  ]
-}
-
-if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map'
-  // http://vue-loader.vuejs.org/en/workflow/production.html
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
+  ],
+  resolve: {
+    modules: [
+      resolve('./js'),
+      resolve('./node_modules')
+    ],
+    alias: {
+      '~': resolve(__dirname, 'src')
+    }
+  },
+  devServer: {
+    host: '127.0.0.1',
+    port: 8010,
+    proxy: {
+      '/api/': {
+        target: 'http://127.0.0.1:8080',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
       }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false,
-        sourceMap: false
-      }
-    })
-  ])
-}
+    }
+  },
+  devtool: options.dev ? '#eval-source-map' : '#source-map'
+})

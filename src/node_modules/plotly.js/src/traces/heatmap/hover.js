@@ -9,11 +9,10 @@
 
 'use strict';
 
-var Fx = require('../../plots/cartesian/graph_interact');
+var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 
-var MAXDIST = require('../../plots/cartesian/constants').MAXDIST;
-
+var MAXDIST = Fx.constants.MAXDIST;
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour) {
     // never let a heatmap override another type as closest point
@@ -96,8 +95,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
     if(zmask && !zmask[ny][nx]) zVal = undefined;
 
     var text;
-    if(Array.isArray(trace.text) && Array.isArray(trace.text[ny])) {
-        text = trace.text[ny][nx];
+    if(Array.isArray(cd0.text) && Array.isArray(cd0.text[ny])) {
+        text = cd0.text[ny][nx];
     }
 
     return [Lib.extendFlat(pointData, {
