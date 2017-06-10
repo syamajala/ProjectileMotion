@@ -1006,7 +1006,7 @@ var Component = __webpack_require__(4)(
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/home/seshu/dev/ProjectileMotion/src/js/home.vue"
+Component.options.__file = "/home/seshu/web/src/js/home.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] home.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -1336,7 +1336,7 @@ exports = module.exports = __webpack_require__(3)(true);
 
 
 // module
-exports.push([module.i, "\n.el-tabs__header {\nmargin: 0 0 0px;\n}\n", "", {"version":3,"sources":["/home/seshu/dev/ProjectileMotion/src/js/home.vue?3b6a013c"],"names":[],"mappings":";AAqCA;AACA,gBAAA;CACA","file":"home.vue","sourcesContent":["<template>\n  <div id=\"app\">\n      <div v-infinite-scroll=\"loadMore\" infinite-scroll-disabled=\"busy\" infinite-scroll-distance=\"10\">\n          hi\n      </div>\n  </div>\n</template>\n\n<script>\nexport default {\n\n    data()\n    {\n        return {\n            activeName: 'first',\n            data: [],\n            busy: false,\n            count: 0\n        }\n    },\n\n    methods: {\n        loadMore: function() {\n            this.busy = true;\n\n            setTimeout(() => {\n                for (var i = 0, j = 10; i < j; i++) {\n                    this.data.push({ name: this.count++ });\n                }\n                this.busy = false;\n            }, 1000);\n        }\n    }\n}\n</script>\n\n<style>\n  .el-tabs__header {\n  margin: 0 0 0px;\n  }\n</style>\n"],"sourceRoot":""}]);
+exports.push([module.i, "\n.el-tabs__header {\nmargin: 0 0 0px;\n}\n", "", {"version":3,"sources":["/home/seshu/web/src/js/home.vue?3b6a013c"],"names":[],"mappings":";AAqCA;AACA,gBAAA;CACA","file":"home.vue","sourcesContent":["<template>\n  <div id=\"app\">\n      <div v-infinite-scroll=\"loadMore\" infinite-scroll-disabled=\"busy\" infinite-scroll-distance=\"10\">\n          hi\n      </div>\n  </div>\n</template>\n\n<script>\nexport default {\n\n    data()\n    {\n        return {\n            activeName: 'first',\n            data: [],\n            busy: false,\n            count: 0\n        }\n    },\n\n    methods: {\n        loadMore: function() {\n            this.busy = true;\n\n            setTimeout(() => {\n                for (var i = 0, j = 10; i < j; i++) {\n                    this.data.push({ name: this.count++ });\n                }\n                this.busy = false;\n            }, 1000);\n        }\n    }\n}\n</script>\n\n<style>\n  .el-tabs__header {\n  margin: 0 0 0px;\n  }\n</style>\n"],"sourceRoot":""}]);
 
 // exports
 

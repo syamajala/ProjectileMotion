@@ -77,9 +77,9 @@ def monte_carlo_data(num):
     vx, vy = p.vel(time)
 
     speed = list(map(np.linalg.norm, zip(vx, vy)))
-    p.make_plot("Speed vs Time", time, speed, xaxis_label="Time", yaxis_label="Speed")
-    p.make_plot("Alt vs Time", time, y, xaxis_label="Time", yaxis_label="Alt")
-    p.make_plot("Trajectory", time, x, y-(20925646.3255*.3048), "Time", "X", "Y")
+    p.make_dropdown_plot("Speed vs Time", time, speed, xaxis_label="Time", yaxis_label="Speed")
+    p.make_dropdown_plot("Alt vs Time", time, y, xaxis_label="Time", yaxis_label="Alt")
+    p.make_dropdown_plot("Trajectory", time, x, y-(20925646.3255*.3048), "Time", "X", "Y")
 
     doc = czml.CZML()
     packet1 = czml.CZMLPacket(id='document', version='1.0')
@@ -144,11 +144,12 @@ def handle_loadDropdownPlots():
 
     p = models[num]
     options = [{'title': plot['title'], 'div': plot['div']}
-               for k, plot in p.plots.iteritems()]
+               for k, plot in p.dropdown_plots.iteritems()]
+    div = options[0]['div']
     data = [json.dumps({'div': plot['div'], 'data': plot['data'], 'layout': plot['layout'],
                         'config': plot['config']}, cls=plutils.PlotlyJSONEncoder)
-            for k, plot in p.plots.iteritems()]
-    emit('loadDropdownPlots', json.dumps({'options': options, 'div': 'plot0', 'data': data}))
+            for k, plot in p.dropdown_plots.iteritems()]
+    emit('loadDropdownPlots', json.dumps({'options': options, 'div': div, 'data': data}))
 
 
 @socketio.on('loadTabPlots')

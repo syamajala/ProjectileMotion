@@ -2,6 +2,7 @@ import collections
 import numpy as np
 import colorlover as cl
 import plotly.graph_objs as go
+import uuid
 
 
 G = 9.8
@@ -9,13 +10,11 @@ G = 9.8
 
 class DropdownPlot():
 
-    pid = 0
-
-    def __init__(self, pid, title, x, y, z=None,
+    def __init__(self, title, x, y, z=None,
                  xaxis_label="", yaxis_label="", zaxis_label="", color=""):
 
         self.title = title
-        self.plot_id = 'plot%d' % pid
+        self.plot_id = 'plot%s' % str(uuid.uuid4())
 
         layout = go.Layout(title=title,
                            xaxis={'title': xaxis_label},
@@ -84,7 +83,7 @@ class Projectile():
         return (self.h, self.toh)
 
     def make_dropdown_plot(self, title, x, y, z=None, xaxis_label="", yaxis_label="", zaxis_label=""):
-        p = Plot(title, x, y, z=z,
-                 xaxis_label=xaxis_label, yaxis_label=yaxis_label, zaxis_label=zaxis_label,
-                 color=self.color)
+        p = DropdownPlot(title, x, y, z=z,
+                         xaxis_label=xaxis_label, yaxis_label=yaxis_label, zaxis_label=zaxis_label,
+                         color=self.color)
         self.dropdown_plots[p.plot_id] = p.plot
