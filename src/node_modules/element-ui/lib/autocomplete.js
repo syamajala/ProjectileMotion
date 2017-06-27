@@ -164,7 +164,7 @@ module.exports =
 	  /* script */
 	  __webpack_require__(8),
 	  /* template */
-	  __webpack_require__(17),
+	  __webpack_require__(16),
 	  /* styles */
 	  null,
 	  /* scopeId */
@@ -188,56 +188,15 @@ module.exports =
 
 	var _input2 = _interopRequireDefault(_input);
 
-	var _clickoutside = __webpack_require__(10);
-
-	var _clickoutside2 = _interopRequireDefault(_clickoutside);
-
-	var _autocompleteSuggestions = __webpack_require__(11);
+	var _autocompleteSuggestions = __webpack_require__(10);
 
 	var _autocompleteSuggestions2 = _interopRequireDefault(_autocompleteSuggestions);
 
-	var _emitter = __webpack_require__(14);
+	var _emitter = __webpack_require__(13);
 
 	var _emitter2 = _interopRequireDefault(_emitter);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
 
 	exports.default = {
 	  name: 'ElAutocomplete',
@@ -251,9 +210,16 @@ module.exports =
 	    ElAutocompleteSuggestions: _autocompleteSuggestions2.default
 	  },
 
-	  directives: { Clickoutside: _clickoutside2.default },
-
 	  props: {
+	    props: {
+	      type: Object,
+	      default: function _default() {
+	        return {
+	          label: 'value',
+	          value: 'value'
+	        };
+	      }
+	    },
 	    popperClass: String,
 	    placeholder: String,
 	    disabled: Boolean,
@@ -341,13 +307,10 @@ module.exports =
 	        this.select(this.suggestions[this.highlightedIndex]);
 	      }
 	    },
-	    handleClickoutside: function handleClickoutside() {
-	      this.isFocus = false;
-	    },
 	    select: function select(item) {
 	      var _this3 = this;
 
-	      this.$emit('input', item.value);
+	      this.$emit('input', item[this.props.value]);
 	      this.$emit('select', item);
 	      this.$nextTick(function (_) {
 	        _this3.suggestions = [];
@@ -388,7 +351,43 @@ module.exports =
 	  beforeDestroy: function beforeDestroy() {
 	    this.$refs.suggestions.$destroy();
 	  }
-	};
+	}; //
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 
 /***/ },
 /* 9 */
@@ -398,19 +397,13 @@ module.exports =
 
 /***/ },
 /* 10 */
-/***/ function(module, exports) {
-
-	module.exports = require("element-ui/lib/utils/clickoutside");
-
-/***/ },
-/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component = __webpack_require__(3)(
 	  /* script */
-	  __webpack_require__(12),
+	  __webpack_require__(11),
 	  /* template */
-	  __webpack_require__(16),
+	  __webpack_require__(15),
 	  /* styles */
 	  null,
 	  /* scopeId */
@@ -423,22 +416,22 @@ module.exports =
 
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _vuePopper = __webpack_require__(13);
+	var _vuePopper = __webpack_require__(12);
 
 	var _vuePopper2 = _interopRequireDefault(_vuePopper);
 
-	var _emitter = __webpack_require__(14);
+	var _emitter = __webpack_require__(13);
 
 	var _emitter2 = _interopRequireDefault(_emitter);
 
-	var _scrollbar = __webpack_require__(15);
+	var _scrollbar = __webpack_require__(14);
 
 	var _scrollbar2 = _interopRequireDefault(_scrollbar);
 
@@ -459,6 +452,7 @@ module.exports =
 
 
 	  props: {
+	    props: Object,
 	    suggestions: Array,
 	    options: {
 	      default: function _default() {
@@ -532,25 +526,25 @@ module.exports =
 	//
 
 /***/ },
-/* 13 */
+/* 12 */
 /***/ function(module, exports) {
 
 	module.exports = require("element-ui/lib/utils/vue-popper");
 
 /***/ },
-/* 14 */
+/* 13 */
 /***/ function(module, exports) {
 
 	module.exports = require("element-ui/lib/mixins/emitter");
 
 /***/ },
-/* 15 */
+/* 14 */
 /***/ function(module, exports) {
 
 	module.exports = require("element-ui/lib/scrollbar");
 
 /***/ },
-/* 16 */
+/* 15 */
 /***/ function(module, exports) {
 
 	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -593,7 +587,7 @@ module.exports =
 	          _vm.select(item)
 	        }
 	      }
-	    }, [_vm._v("\n          " + _vm._s(item.value) + "\n        ")]) : _c(_vm.parent.customItem, {
+	    }, [_vm._v("\n          " + _vm._s(item[_vm.props.label]) + "\n        ")]) : _c(_vm.parent.customItem, {
 	      tag: "component",
 	      class: {
 	        'highlighted': _vm.parent.highlightedIndex === index
@@ -612,17 +606,11 @@ module.exports =
 	},staticRenderFns: []}
 
 /***/ },
-/* 17 */
+/* 16 */
 /***/ function(module, exports) {
 
 	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
 	  return _c('div', {
-	    directives: [{
-	      name: "clickoutside",
-	      rawName: "v-clickoutside",
-	      value: (_vm.handleClickoutside),
-	      expression: "handleClickoutside"
-	    }],
 	    staticClass: "el-autocomplete"
 	  }, [_c('el-input', {
 	    ref: "input",
@@ -660,7 +648,7 @@ module.exports =
 	        _vm.highlight(_vm.highlightedIndex + 1)
 	      }, function($event) {
 	        if (!('button' in $event) && _vm._k($event.keyCode, "enter", 13)) { return null; }
-	        $event.stopPropagation();
+	        $event.preventDefault();
 	        _vm.handleKeyEnter($event)
 	      }]
 	    }
@@ -672,6 +660,7 @@ module.exports =
 	    ref: "suggestions",
 	    class: [_vm.popperClass ? _vm.popperClass : ''],
 	    attrs: {
+	      "props": _vm.props,
 	      "suggestions": _vm.suggestions
 	    }
 	  })], 1)
