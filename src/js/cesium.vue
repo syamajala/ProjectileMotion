@@ -52,7 +52,7 @@ export default {
             window.open(data);
         }
 
-        var gui = new dat.GUI({ autoPlace: false });
+        var gui = new dat.GUI({ autoPlace: false, closeOnTop: true });
         gui.add(viewer, 'screenshot').name("Screenshot");
 
         bus.$on('loadCesiumData', function(data) {
