@@ -1,3 +1,4 @@
+const path = require('path')
 const resolve = require('path').resolve
 const webpack = require('webpack')
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -70,14 +71,10 @@ module.exports = (options = {}) => ({
   devServer: {
     host: '127.0.0.1',
     port: 8010,
+    compress: true,
+    contentBase: path.join(__dirname, 'templates'),
     proxy: {
-      '/api/': {
-        target: 'http://127.0.0.1:8080',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': ''
-        }
-      }
+      "/socket.io": "http://127.0.0.1:8081"
     }
   },
   devtool: options.dev ? '#eval-source-map' : '#source-map'
