@@ -7,4 +7,4 @@ pip-selfcheck.json
 __pycache__
 *.pyc
 dump.rdb
-static/js
+src/static/js
