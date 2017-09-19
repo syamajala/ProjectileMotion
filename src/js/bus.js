@@ -14,7 +14,7 @@ var reload = false;
 socket.on('connect', function() {
     if(reload)
     {
-        location.reload()
+        location.reload();
     }
 
     reload = true;

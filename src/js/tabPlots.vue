@@ -9,12 +9,12 @@ import bus from './bus.js'
 
 export default {
     created() {
-        var self = this;
-        bus.$on('loadTabPlots', function(data) {
-            if (data['tab'] == self.tab) {
-                self.options = data['options']
-                self.plots = data['data']
-                self.build_plots = true;
+        bus.$on('loadTabPlots', (data) => {
+            if (data['tab'] == this.tab)
+            {
+                this.options = data['options'];
+                this.plots = data['data'];
+                this.build_plots = true;
             }
         })
     },
@@ -24,12 +24,13 @@ export default {
     },
 
     updated() {
-        var Plotly = required('plotly.js/dist/plotly.min.js')
-        if(this.build_plots) {
+        var Plotly = required('plotly.js/dist/plotly.min.js');
+        if(this.build_plots)
+        {
             for(var i = 0; i < this.plots.length; i++)
             {
-                var elem = JSON.parse(this.plots[i])
-                Plotly.newPlot(elem.div, elem.data, elem.layout, elem.config)
+                var elem = this.plots[i];
+                Plotly.newPlot(elem.div, elem.data, elem.layout, elem.config);
             }
             this.build_plots = false;
         }

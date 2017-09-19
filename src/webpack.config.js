@@ -11,7 +11,8 @@ module.exports = (options = {}) => ({
     viz: './js/viz.js',
     libs: ['vue/dist/vue.common.js', 'element-ui/lib/element-ui.common.js',
            'socket.io-client/dist/socket.io.js', 'plotly.js/dist/plotly.min.js'],
-    cesium: ['cesium/Build/Cesium/Cesium.js', 'dat.gui/build/dat.gui.min.js']
+    cesium: ['cesium/Build/Cesium/Cesium.js', 'dat.gui/build/dat.gui.min.js',
+             'ccapture.js/build/CCapture.all.min.js']
   },
   output: {
     path: resolve(__dirname, './static/js'),

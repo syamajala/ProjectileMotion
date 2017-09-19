@@ -146,10 +146,10 @@ def handle_loadDropdownPlots():
     options = [{'title': plot['title'], 'div': plot['div']}
                for k, plot in p.dropdown_plots.iteritems()]
     div = options[0]['div']
-    data = [json.dumps({'div': plot['div'], 'data': plot['data'], 'layout': plot['layout'],
-                        'config': plot['config']}, cls=plutils.PlotlyJSONEncoder)
-            for k, plot in p.dropdown_plots.iteritems()]
-    emit('loadDropdownPlots', json.dumps({'options': options, 'div': div, 'data': data}))
+    data = [{'div': plot['div'], 'data': plot['data'], 'layout': plot['layout'],
+             'config': plot['config']} for k, plot in p.dropdown_plots.iteritems()]
+    emit('loadDropdownPlots', json.dumps({'options': options, 'div': div, 'data': data},
+                                         cls=plutils.PlotlyJSONEncoder))
 
 
 @socketio.on('loadTabPlots')
@@ -159,10 +159,10 @@ def handle_loadTabPlots():
 
     p = models[num]
     options = [{'div': plot['div']} for k, plot in p.tab_plots.iteritems()]
-    data = [json.dumps({'div': plot['div'], 'data': plot['data'], 'layout': plot['layout'],
-                        'config': plot['config']}, cls=plutils.PlotlyJSONEncoder)
-            for k, plot in p.plots.iteritems()]
-    emit('loadTabPlots', json.dumps({'options': options, 'div': 'plot0', 'data': data}))
+    data = [{'div': plot['div'], 'data': plot['data'], 'layout': plot['layout'],
+             'config': plot['config']} for k, plot in p.plots.iteritems()]
+    emit('loadTabPlots', json.dumps({'options': options, 'div': 'plot0', 'data': data},
+                                    cls=plutils.PlotlyJSONEncoder))
 
 
 if __name__ == '__main__':

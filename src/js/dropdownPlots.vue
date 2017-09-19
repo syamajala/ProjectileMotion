@@ -17,12 +17,11 @@ import bus from './bus.js'
 
 export default {
     created() {
-        var self = this;
-        bus.$on('loadDropdownPlots', function(data) {
-            self.options = data['options'];
-            self.div = data['div'];
-            self.plots = data['data']
-            self.build_plots = true;
+        bus.$on('loadDropdownPlots', (data) => {
+            this.options = data['options'];
+            this.div = data['div'];
+            this.plots = data['data'];
+            this.build_plots = true;
         })
     },
 
@@ -32,14 +31,14 @@ export default {
 
     updated() {
         var Plotly = require('plotly.js/dist/plotly.min.js')
-        if(this.build_plots) {
+        if(this.build_plots)
+        {
             for(var i = 0; i < this.plots.length; i++)
             {
-                var elem = JSON.parse(this.plots[i])
+                var elem = this.plots[i];
                 Plotly.newPlot(elem.div, elem.data, elem.layout, elem.config);
             }
             this.build_plots = false;
-
         }
     }
 }
