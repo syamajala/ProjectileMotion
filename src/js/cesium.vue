@@ -9,7 +9,6 @@
 <script>
 require('cesium/Build/Cesium/Cesium.js');
 require('cesium/Build/Cesium/Widgets/widgets.css');
-import bus from 'bus.js'
 
 export default {
 
@@ -55,9 +54,8 @@ export default {
         var gui = new dat.GUI({ autoPlace: false, closeOnTop: true });
         gui.add(viewer, 'screenshot').name("Screenshot");
 
-        bus.$on('loadCesiumData', function(data) {
-
-            viewer.dataSources.add(Cesium.CzmlDataSource.load(data)).then(function(ds) {
+        this.$options.sockets.loadCesiumData = (data) => {
+            viewer.dataSources.add(Cesium.CzmlDataSource.load(JSON.parse(data))).then(function(ds) {
 
                 var entities = ds['entities']['values']
                 var ec = new Cesium.EntityCollection(ds)
@@ -81,7 +79,9 @@ export default {
                 viewer.zoomTo(ds);
                 viewer.clock.shouldAnimate = true;
             });
-        })
+        };
+
+        this.$socket.emit('loadCesiumData');
     }
 }
 </script>

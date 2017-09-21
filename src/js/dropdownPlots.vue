@@ -13,16 +13,18 @@
 </template>
 
 <script>
-import bus from './bus.js'
 
 export default {
     created() {
-        bus.$on('loadDropdownPlots', (data) => {
+        this.$options.sockets.loadDropdownPlots = (data) => {
+            data = JSON.parse(data);
             this.options = data['options'];
             this.div = data['div'];
             this.plots = data['data'];
             this.build_plots = true;
-        })
+        };
+
+        this.$socket.emit('loadDropdownPlots');
     },
 
     data() {

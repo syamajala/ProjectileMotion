@@ -11,22 +11,22 @@ var socket = io.connect('http://'.concat(location.hostname, ':', location.port),
 
 var reload = false;
 
-socket.on('connect', function() {
-    if(reload)
-    {
-        location.reload();
-    }
+// socket.on('connect', function() {
+//     if(reload)
+//     {
+//         location.reload();
+//     }
 
-    reload = true;
-    socket.emit('loadCesiumData');
-    socket.emit('loadDropdownPlots');
-    socket.emit('loadTabPlots');
-});
+//     reload = true;
+//     socket.emit('loadCesiumData');
+//     socket.emit('loadDropdownPlots');
+//     socket.emit('loadTabPlots');
+// });
 
-socket.on('loadCesiumData', function(data) {
-    data = JSON.parse(data);
-    bus.$emit('loadCesiumData', data);
-});
+// socket.on('loadCesiumData', function(data) {
+//     data = JSON.parse(data);
+//     bus.$emit('loadCesiumData', data);
+// });
 
 socket.on('loadDropdownPlots', function(data) {
     data = JSON.parse(data);
