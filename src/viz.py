@@ -79,7 +79,7 @@ def monte_carlo_data(num):
     speed = list(map(np.linalg.norm, zip(vx, vy)))
     p.make_dropdown_plot("Speed vs Time", time, speed, xaxis_label="Time", yaxis_label="Speed")
     p.make_dropdown_plot("Alt vs Time", time, y, xaxis_label="Time", yaxis_label="Alt")
-    p.make_dropdown_plot("Trajectory", time, x, y-(20925646.3255*.3048), "Time", "X", "Y")
+    p.make_tab_plot("trajectory", "Trajectory", time, x, y-(20925646.3255*.3048), "Time", "X", "Y")
 
     doc = czml.CZML()
     packet1 = czml.CZMLPacket(id='document', version='1.0')
@@ -160,8 +160,8 @@ def handle_loadTabPlots():
     p = models[num]
     options = [{'div': plot['div']} for k, plot in p.tab_plots.iteritems()]
     data = [{'div': plot['div'], 'data': plot['data'], 'layout': plot['layout'],
-             'config': plot['config']} for k, plot in p.plots.iteritems()]
-    emit('loadTabPlots', json.dumps({'options': options, 'div': 'plot0', 'data': data},
+             'config': plot['config']} for k, plot in p.tab_plots.iteritems()]
+    emit('loadTabPlots', json.dumps({'options': options, 'data': data, 'tab': 'trajectory'},
                                     cls=plutils.PlotlyJSONEncoder))
 
 

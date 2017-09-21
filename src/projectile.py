@@ -10,8 +10,7 @@ G = 9.8
 
 class DropdownPlot():
 
-    def __init__(self, title, x, y, z=None,
-                 xaxis_label="", yaxis_label="", zaxis_label="", color=""):
+    def __init__(self, title, x, y, z=None, xaxis_label="", yaxis_label="", zaxis_label="", color=""):
 
         self.title = title
         self.plot_id = 'plot%s' % str(uuid.uuid4())
@@ -33,6 +32,30 @@ class DropdownPlot():
         self.plot = {'title': title, 'div': self.plot_id, 'data': [line], 'layout': layout, 'config': config}
 
 
+class TabPlot():
+
+    def __init__(self, tab, title, x, y, z=None, xaxis_label="", yaxis_label="", zaxis_label="", color=""):
+
+        self.tab = tab
+        self.plot_id = 'plot%s' % str(uuid.uuid4())
+
+        layout = go.Layout(title=title,
+                           xaxis={'title': xaxis_label},
+                           yaxis={'title': yaxis_label},
+                           margin={'l': 50, 'r': 0, 't': 25, 'b': 40},
+                           showlegend=True,
+                           legend={'x': 0.02, 'y': 1})
+
+        if z is not None:
+            line = go.Scatter3d(x=x, y=y, z=z, line={'color': color}, mode='lines')
+        else:
+            line = go.Scatter(x=x, y=y, line={'color': color})
+
+        config = {'show_link': False}
+
+        self.plot = {'tab': tab, 'div': self.plot_id, 'data': [line], 'layout': layout, 'config': config}
+
+
 class Projectile():
 
     def __init__(self, v0, theta, color=""):
@@ -48,6 +71,7 @@ class Projectile():
         self.color = cl.scales['12']['qual']['Set3'][0]
 
         self.dropdown_plots = collections.OrderedDict()
+        self.tab_plots = collections.OrderedDict()
 
     def pos(self, t):
 
@@ -87,3 +111,9 @@ class Projectile():
                          xaxis_label=xaxis_label, yaxis_label=yaxis_label, zaxis_label=zaxis_label,
                          color=self.color)
         self.dropdown_plots[p.plot_id] = p.plot
+
+    def make_tab_plot(self, tab, title, x, y, z=None, xaxis_label="", yaxis_label="", zaxis_label=""):
+        p = TabPlot(tab, title, x, y, z=z,
+                    xaxis_label=xaxis_label, yaxis_label=yaxis_label, zaxis_label=zaxis_label,
+                    color=self.color)
+        self.tab_plots[p.plot_id] = p.plot

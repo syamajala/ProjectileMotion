@@ -10,6 +10,7 @@ import bus from './bus.js'
 export default {
     created() {
         bus.$on('loadTabPlots', (data) => {
+            console.log(data)
             if (data['tab'] == this.tab)
             {
                 this.options = data['options'];
@@ -24,7 +25,7 @@ export default {
     },
 
     updated() {
-        var Plotly = required('plotly.js/dist/plotly.min.js');
+        var Plotly = require('plotly.js/dist/plotly.min.js');
         if(this.build_plots)
         {
             for(var i = 0; i < this.plots.length; i++)

@@ -20,6 +20,7 @@ socket.on('connect', function() {
     reload = true;
     socket.emit('loadCesiumData');
     socket.emit('loadDropdownPlots');
+    socket.emit('loadTabPlots');
 });
 
 socket.on('loadCesiumData', function(data) {

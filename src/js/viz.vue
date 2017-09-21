@@ -16,7 +16,6 @@
 <script>
 import cesium from 'cesium.vue'
 import dropdownPlots from 'dropdownPlots.vue'
-import tabPlots from 'tabPlots.vue'
 import messages from 'messages.vue'
 
 export default {
@@ -29,7 +28,7 @@ export default {
     components: {
         cesium,
         dropdownPlots,
-        tabPlots,
+        'tabPlots': () => import('tabPlots.vue'),
         messages
     }
 }
