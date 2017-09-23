@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <el-col :span="14">
-      <el-tabs v-model="activeName">
+      <el-tabs v-model="activeName" @tab-click="loadTabPlots">
         <el-tab-pane label="Cesium" name="cesium"><cesium></cesium></el-tab-pane>
         <el-tab-pane label="Trajectory" name="trajectory"><tabPlots tab="trajectory"></tabPlots></el-tab-pane>
       </el-tabs>
@@ -22,7 +22,8 @@ export default {
     data()
     {
         return {
-            activeName: 'cesium'
+            activeName: 'cesium',
+            tabPlots: {'trajectory': true}
         }
     },
     components: {
@@ -30,6 +31,15 @@ export default {
         dropdownPlots,
         'tabPlots': () => import('tabPlots.vue'),
         messages
+    },
+    methods: {
+        loadTabPlots(tab, event) {
+            if (this.tabPlots[tab.name])
+            {
+                this.$socket.emit('loadTabPlots');
+            }
+            this.tabPlots[tab.name] = false;
+        }
     }
 }
 </script>

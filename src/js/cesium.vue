@@ -14,12 +14,12 @@ export default {
 
     mounted()
     {
-        var dat = require('dat.gui/build/dat.gui.min.js');
+        const dat = require('dat.gui/build/dat.gui.min.js');
 
         window.CESIUM_BASE_URL = './js/Cesium'
-        var Cesium = window.Cesium;
+        const Cesium = window.Cesium;
 
-        var viewer = new Cesium.Viewer('cesiumContainer', {
+        const viewer = new Cesium.Viewer('cesiumContainer', {
             fullscreenButton: false,
             geocoder: false,
             baseLayerPicker: false,
@@ -30,7 +30,7 @@ export default {
         });
 
         viewer.clock.shouldAnimate = false;
-        var scene = viewer.scene;
+        const scene = viewer.scene;
 
         scene.skyBox = new Cesium.SkyBox({
             sources : {
@@ -47,21 +47,38 @@ export default {
 
         viewer.screenshot = function() {
             this.render();
-            var data = this.canvas.toDataURL('image/jpeg', 1);
+            const data = this.canvas.toDataURL('image/jpeg', 1);
             window.open(data);
         }
 
-        var gui = new dat.GUI({ autoPlace: false, closeOnTop: true });
+        viewer.record = function() {
+            const capturer = new CCapture( { format: 'webm' });
+            scene.postRender.addEventListener((scene, time) => {
+                capturer.capture(this.canvas);
+            });
+            capturer.start();
+            viewer.clock.shouldAnimate = true;
+            viewer.clock.onTick.addEventListener((time) => {
+                if (time == viewer.clock.stopTime)
+                {
+                    capturer.stop();
+                    capturer.save();
+                }
+            })
+        };
+
+        const gui = new dat.GUI({ autoPlace: false, closeOnTop: true });
+        gui.add(viewer, 'record').name("Record");
         gui.add(viewer, 'screenshot').name("Screenshot");
 
         this.$options.sockets.loadCesiumData = (data) => {
             viewer.dataSources.add(Cesium.CzmlDataSource.load(JSON.parse(data))).then(function(ds) {
 
-                var entities = ds['entities']['values']
-                var ec = new Cesium.EntityCollection(ds)
-                for (var i = 0; i < entities.length; i++)
+                const entities = ds['entities']['values']
+                const ec = new Cesium.EntityCollection(ds)
+                for (let i = 0; i < entities.length; i++)
                 {
-                    var entity = entities[i];
+                    const entity = entities[i];
                     if(entity['id'].indexOf('point') == 0)
                     {
                         ec.add(entity)
@@ -73,11 +90,11 @@ export default {
                 }
                 gui.add(ec, 'show').name("Points");
                 gui.close();
-                var toolbar = document.getElementById('toolbar');
+                const toolbar = document.getElementById('toolbar');
                 toolbar.appendChild(gui.domElement);
 
                 viewer.zoomTo(ds);
-                viewer.clock.shouldAnimate = true;
+                //viewer.clock.shouldAnimate = true;
             });
         };
 

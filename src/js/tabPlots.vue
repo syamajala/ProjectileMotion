@@ -5,32 +5,29 @@
 </template>
 
 <script>
-import bus from './bus.js'
-
 export default {
     created() {
-        bus.$on('loadTabPlots', (data) => {
-            console.log(data)
+        this.$options.sockets.loadTabPlots = (data) => {
+            data = JSON.parse(data);
             if (data['tab'] == this.tab)
             {
                 this.options = data['options'];
                 this.plots = data['data'];
-                this.build_plots = true;
             }
-        })
+        };
     },
 
     data() {
-        return  { options: [] }
+        return  { options: [], build_plots: true }
     },
 
     updated() {
-        var Plotly = require('plotly.js/dist/plotly.min.js');
+        const Plotly = require('plotly.js/dist/plotly.min.js');
         if(this.build_plots)
         {
-            for(var i = 0; i < this.plots.length; i++)
+            for(let i = 0; i < this.plots.length; i++)
             {
-                var elem = this.plots[i];
+                const elem = this.plots[i];
                 Plotly.newPlot(elem.div, elem.data, elem.layout, elem.config);
             }
             this.build_plots = false;
