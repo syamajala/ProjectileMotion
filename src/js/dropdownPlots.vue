@@ -7,12 +7,16 @@
                 :value="item.div">
             </el-option>
         </el-select>
+        <el-button @click="showComments">Comments</el-button>
 
         <div v-for="item in options" v-show="div == item.div" :id="item.div" class="plots"></div>
+        <comments v-show="comments"></comments>
+
     </div>
 </template>
 
 <script>
+import comments from 'comments.vue'
 
 export default {
     created() {
@@ -28,7 +32,7 @@ export default {
     },
 
     data() {
-        return { options: [], div: '' }
+        return { options: [], div: '', comments: false }
     },
 
     updated() {
@@ -42,6 +46,16 @@ export default {
             }
             this.build_plots = false;
         }
+    },
+
+    methods: {
+        showComments: function() {
+            return (this.comments = !this.comments);
+        }
+    },
+
+    components: {
+        comments
     }
 }
 </script>

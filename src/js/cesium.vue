@@ -50,21 +50,25 @@ export default {
             const data = this.canvas.toDataURL('image/jpeg', 1);
             window.open(data);
         }
+        var capturer = new CCapture( { format: 'webm', timeLimit: 5, autoSaveTime: 6 });
 
         viewer.record = function() {
-            const capturer = new CCapture( { format: 'webm' });
             scene.postRender.addEventListener((scene, time) => {
                 capturer.capture(this.canvas);
             });
             capturer.start();
+
+            viewer.clock.multiplier = 2;
             viewer.clock.shouldAnimate = true;
+            var stop = true;
             viewer.clock.onTick.addEventListener((time) => {
-                if (time == viewer.clock.stopTime)
+                if (!viewer.clock.shouldAnimate && stop)
                 {
+                    stop = false;
                     capturer.stop();
                     capturer.save();
                 }
-            })
+            });
         };
 
         const gui = new dat.GUI({ autoPlace: false, closeOnTop: true });
@@ -76,6 +80,7 @@ export default {
 
                 const entities = ds['entities']['values']
                 const ec = new Cesium.EntityCollection(ds)
+
                 for (let i = 0; i < entities.length; i++)
                 {
                     const entity = entities[i];
@@ -88,13 +93,15 @@ export default {
                         gui.add(entity, 'show').name(entity['name'])
                     }
                 }
+                ec.show = false;
                 gui.add(ec, 'show').name("Points");
                 gui.close();
                 const toolbar = document.getElementById('toolbar');
                 toolbar.appendChild(gui.domElement);
 
-                viewer.zoomTo(ds);
-                //viewer.clock.shouldAnimate = true;
+                // viewer.zoomTo(ds);
+                viewer.trackedEntity = ds.entities.getById('path');
+                // viewer.clock.shouldAnimate = true;
             });
         };
 

@@ -7,8 +7,8 @@
       </el-tabs>
     </el-col>
     <el-col :span="10" id="content">
-      <el-row><dropdownPlots></dropdownPlots></el-row>
-      <el-row><messages></messages></el-row>
+        <el-row><dropdownPlots></dropdownPlots></el-row>
+        <el-row><messages></messages></el-row>
     </el-col>
   </div>
 </template>

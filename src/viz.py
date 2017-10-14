@@ -213,7 +213,7 @@ if __name__ == '__main__':
     fig['layout'].update(height=4000, width=1800, showlegend=False,
                          hovermode="closest")
     fig['data'] = go.Data(data)
-
+    test = 1
     plots = plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
     tof = max(tofs)
     time = np.arange(tof)
@@ -221,7 +221,7 @@ if __name__ == '__main__':
     trajs = itertools.starmap(lambda idx, pos: go.Scatter3d(x=time, y=pos[0], z=pos[1], text='MC%d' % idx,
                                                             mode='lines', showlegend=False),
                               enumerate(pos))
-
+    test = 1
     fig = {'data': list(trajs),
            'layout': go.Layout(title='Projectile Motion', height=600, width=1800,
                                margin={'l': 0, 'r': 0, 't': 25, 'b': 0},)}
