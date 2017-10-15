@@ -8,7 +8,7 @@
     </el-col>
     <el-col :span="10" id="content">
         <el-row><dropdownPlots></dropdownPlots></el-row>
-        <el-row><messages></messages></el-row>
+        <el-row><tables></tables></el-row>
     </el-col>
   </div>
 </template>
@@ -16,7 +16,7 @@
 <script>
 import cesium from 'cesium.vue'
 import dropdownPlots from 'dropdownPlots.vue'
-import messages from 'messages.vue'
+import tables from 'tables.vue'
 
 export default {
     data()
@@ -30,7 +30,7 @@ export default {
         cesium,
         dropdownPlots,
         'tabPlots': () => import('tabPlots.vue'),
-        messages
+        tables
     },
     methods: {
         loadTabPlots(tab, event) {

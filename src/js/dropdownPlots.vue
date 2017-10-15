@@ -1,15 +1,17 @@
 <template>
     <div class="dropdown_plots">
-        <el-select v-model="div" placeholder="Select">
+        <el-select v-model="div" placeholder="Select" :disabled="comments">
             <el-option
                 v-for="item in options"
                 :label="item.title"
-                :value="item.div">
+                :value="item.div"
+                :key="item.id">
             </el-option>
         </el-select>
+
         <el-button @click="showComments">Comments</el-button>
 
-        <div v-for="item in options" v-show="div == item.div" :id="item.div" class="plots"></div>
+        <div v-for="item in options" v-show="div == item.div" :id="item.div" :key="item.id" class="plots"></div>
         <comments v-show="comments"></comments>
 
     </div>
